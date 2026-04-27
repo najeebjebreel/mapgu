@@ -108,7 +108,7 @@ mapgu-reprod/
 
 ```bash
 conda env create -f environment.yml
-conda activate tabular-tf
+conda activate mapgu
 ```
 
 This installs Python 3.8, PyTorch 1.12+cu116, TensorFlow 2.13,
@@ -176,7 +176,7 @@ Run one complete experiment cycle on Heart / XGBoost — a fast tabular
 benchmark that exercises all five methods.
 
 ```bash
-conda activate tabular-tf
+conda activate mapgu
 
 # Step 1: Generate DP data for Heart (one-time)
 python -m mapgu prepare dp --dataset heart --eps 1 --skip-existing false
@@ -409,7 +409,7 @@ Reduce `--batch_size` (try 128 or 64) or disable AMP (`--use_amp false`).
 DenseNet uses more memory than ResNet-18.
 
 **`No module named 'mapgu'`**
-Run commands from the repository root with `conda activate tabular-tf`.
+Run commands from the repository root with `conda activate mapgu`.
 The `mapgu/` package is resolved relative to the working directory.
 
 **`dp_adult.csv not found` or similar missing DP data**
@@ -427,7 +427,7 @@ install PyTorch manually after creating the conda environment:
 
 ```bash
 conda env create -f environment.yml --no-deps  # creates env without pip packages
-conda activate tabular-tf
+conda activate mapgu
 pip install torch==1.12.0+cu113 torchvision==0.13.0+cu113 \
     -f https://download.pytorch.org/whl/torch_stable.html
 pip install -r requirements.txt  # remaining pip deps
