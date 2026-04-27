@@ -325,8 +325,7 @@ and run all cells. Figures are saved as PDFs under `results/figures/`.
 | **Fig. 4** | Fine-tuning epoch sensitivity (CIFAR-10 / ResNet-18) | `sensitivity_analysis.ipynb` §4 | `results/figures/ft_epochs_sweep.pdf` |
 | **Fig. (tradeoff)** | k vs ε trade-off (CIFAR-10 / ResNet-18) | `sensitivity_analysis.ipynb` | `results/figures/tradeoff_cifar10_resnet18.pdf` `results/figures/tradeoff_k_vs_eps_cifar10_resnet18.pdf` |
 
-> Pre-generated PDF figures are already present in `figures/` and `results/figures/`.
-> Re-running the notebook regenerates them from the data embedded in each cell.
+> Run the notebook to generate figures under `results/figures/`.
 
 ### Result file naming convention
 

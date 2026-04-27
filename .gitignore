@@ -2,9 +2,10 @@
 # All datasets are excluded; download or regenerate per README §4.
 data/
 
-# ── Experiment results ────────────────────────────────────────────────────────
-# Reproduce by running cli_commands.txt; see README §6.
+# ── Experiment results and generated figures ──────────────────────────────────
+# Reproduce by running cli_commands.txt and sensitivity_analysis.ipynb; see README §6.
 results/
+figures/
 
 # ── Python ────────────────────────────────────────────────────────────────────
 __pycache__/
