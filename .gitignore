@@ -1,0 +1,34 @@
+# ── Datasets ─────────────────────────────────────────────────────────────────
+# All datasets are excluded; download or regenerate per README §4.
+data/
+
+# ── Experiment results ────────────────────────────────────────────────────────
+# Reproduce by running cli_commands.txt; see README §6.
+results/
+
+# ── Python ────────────────────────────────────────────────────────────────────
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+*.egg-info/
+.eggs/
+dist/
+build/
+*.so
+
+# ── Jupyter ───────────────────────────────────────────────────────────────────
+.ipynb_checkpoints/
+
+# ── Working files not part of the artifact ────────────────────────────────────
+paper_sections_draft.tex
+finetuning_epochs.xlsx
+
+# ── Claude Code internal ──────────────────────────────────────────────────────
+.claude/
+
+# ── OS ────────────────────────────────────────────────────────────────────────
+.DS_Store
+Thumbs.db
+*.log
+.env
