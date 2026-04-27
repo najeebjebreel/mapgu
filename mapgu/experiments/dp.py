@@ -76,7 +76,7 @@ def load_npz_train(path: str) -> Tuple[np.ndarray, np.ndarray]:
 
 
 def _dp_dataset_dir(dataset: str) -> str:
-    return "GiveMeSomeCredit" if dataset == "credit" else dataset
+    return dataset
 
 
 def _dp_eps_dir(dataset: str, eps: float) -> str:

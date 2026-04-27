@@ -80,7 +80,7 @@ mapgu-reprod/
 ├── data/                         # [gitignored] — populate per §4 before running
 │   ├── adult/                    # Adult Income dataset (download; see §4)
 │   ├── heart/                    # Heart Disease dataset (download; see §4)
-│   ├── GiveMeSomeCredit/         # Credit dataset (download; see §4)
+│   ├── credit/                   # Credit dataset (download; see §4)
 │   ├── cifar-10-batches-py/      # CIFAR-10 binary batches (auto-downloaded; see §4)
 │   ├── k_anon_data/              # k-anonymous data (regenerated automatically on demand)
 │   └── dp_data/                  # DP synthetic data (generate via Step 1; see §4)
@@ -134,7 +134,7 @@ Place each file at the path shown before running any experiments.
 |---|---|---|
 | Adult Income | [UCI ML Repository](https://archive.ics.uci.edu/dataset/2/adult) — download `adult.data` | `data/adult/adult.data` |
 | Heart Disease | [Kaggle — Cardiovascular Disease](https://www.kaggle.com/datasets/sulianova/cardiovascular-disease-dataset) — download `cardio_train.csv` | `data/heart/cardio_train.csv` |
-| Credit (GiveMeSomeCredit) | [Kaggle — GiveMeSomeCredit](https://www.kaggle.com/c/GiveMeSomeCredit/data) — download `cs-training.csv` | `data/GiveMeSomeCredit/cs-training.csv` |
+| Credit (GiveMeSomeCredit) | [Kaggle — GiveMeSomeCredit](https://www.kaggle.com/c/GiveMeSomeCredit/data) — download `cs-training.csv` | `data/credit/cs-training.csv` |
 | CIFAR-10 | Auto-downloaded on first run (see below) | `data/cifar-10-batches-py/` |
 
 **CIFAR-10** is fetched automatically by PyTorch the first time you run a

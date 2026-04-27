@@ -366,7 +366,7 @@ def prepare_dp(
         elif dataset == "credit":
             from mapgu.data.privacy.dp import generate_dp_laplace_only
 
-            out_dir = os.path.join(DP_DIR, "GiveMeSomeCredit", f"eps={eps_str}")
+            out_dir = os.path.join(DP_DIR, "credit", f"eps={eps_str}")
             out_csv = os.path.join(out_dir, "dp_credit.csv")
             _ensure_dir(out_dir)
 
@@ -520,7 +520,7 @@ def main() -> None:
     d.add_argument("--adult-in-path", default=os.path.join(DATA_DIR, "adult", "adult.data"))
     d.add_argument("--adult-utilities-pkl", default=os.path.join(DATA_DIR, "adult", "utilities.pkl"))
     d.add_argument("--heart-in-path", default=os.path.join(DATA_DIR, "heart", "cardio_train.csv"))
-    d.add_argument("--credit-in-path", default=os.path.join(DATA_DIR, "GiveMeSomeCredit", "cs-training.csv"))
+    d.add_argument("--credit-in-path", default=os.path.join(DATA_DIR, "credit", "cs-training.csv"))
     d.add_argument("--cifar-root", default=os.path.join(DATA_DIR))
     d.add_argument("--cifar-m", type=int, default=16)
     d.add_argument("--cifar-block", type=int, default=4)

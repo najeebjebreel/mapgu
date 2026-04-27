@@ -287,7 +287,7 @@ def build_parser() -> argparse.ArgumentParser:
     dp_p.add_argument("--heart-in-path",
                       default=os.path.join(_data, "heart", "cardio_train.csv"))
     dp_p.add_argument("--credit-in-path",
-                      default=os.path.join(_data, "GiveMeSomeCredit", "cs-training.csv"))
+                      default=os.path.join(_data, "credit", "cs-training.csv"))
     dp_p.add_argument("--cifar-root", default=_data)
     dp_p.add_argument("--cifar-m", type=int, default=16)
     dp_p.add_argument("--cifar-block", type=int, default=4)
