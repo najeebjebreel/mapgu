@@ -491,13 +491,13 @@ class SISAExperiments(PrivacyBenchmark):
 
         rmia_probs = None
         if 'rmia' in getattr(self, 'mia_attacks', []) and X_retain is not None and y_retain is not None and forget_ratio is not None:
-            ref_models = self._get_reference_models_sklearn(X_retain, y_retain, forget_ratio, run_id)
+            ref_models = self._get_reference_models_predict_proba(X_retain, y_retain, forget_ratio, run_id)
             y_test_eff = np.asarray(self.y_test)[ridx]
             # Ensemble average P(y_true|x) from target shard models
             probs_tgt_m  = self._xgb_ensemble_proba(models, self.X_train[np.concatenate([fi for fi in forget_shard_idxs if len(fi) > 0])])[np.arange(len(y_forget)), y_forget]
             probs_tgt_nm = self._xgb_ensemble_proba(models, self.X_test)[ridx, y_test_eff]
-            probs_ref_m  = np.stack([self._extract_true_class_probs_sklearn(rm, self.X_train[np.concatenate([fi for fi in forget_shard_idxs if len(fi) > 0])], y_forget) for rm in ref_models]).mean(axis=0)
-            probs_ref_nm = np.stack([self._extract_true_class_probs_sklearn(rm, self.X_test[ridx], y_test_eff) for rm in ref_models]).mean(axis=0)
+            probs_ref_m  = np.stack([self._extract_true_class_probs_predict_proba(rm, self.X_train[np.concatenate([fi for fi in forget_shard_idxs if len(fi) > 0])], y_forget) for rm in ref_models]).mean(axis=0)
+            probs_ref_nm = np.stack([self._extract_true_class_probs_predict_proba(rm, self.X_test[ridx], y_test_eff) for rm in ref_models]).mean(axis=0)
             rmia_probs = (probs_tgt_m, probs_ref_m, probs_tgt_nm, probs_ref_nm)
 
         return self._sisa_mia_compute(
@@ -531,12 +531,12 @@ class SISAExperiments(PrivacyBenchmark):
 
         rmia_probs = None
         if 'rmia' in getattr(self, 'mia_attacks', []) and X_retain is not None and y_retain is not None and forget_ratio is not None:
-            ref_models = self._get_reference_models_sklearn(X_retain, y_retain, forget_ratio, run_id)
+            ref_models = self._get_reference_models_predict_proba(X_retain, y_retain, forget_ratio, run_id)
             y_test_eff = np.asarray(self.y_test)[ridx]
             probs_tgt_m  = probs_forget[np.arange(len(y_forget)), y_forget]
             probs_tgt_nm = probs_test[ridx, y_test_eff]
-            probs_ref_m  = np.stack([self._extract_true_class_probs_sklearn(rm, X_forget,       y_forget)   for rm in ref_models]).mean(axis=0)
-            probs_ref_nm = np.stack([self._extract_true_class_probs_sklearn(rm, self.X_test[ridx], y_test_eff) for rm in ref_models]).mean(axis=0)
+            probs_ref_m  = np.stack([self._extract_true_class_probs_predict_proba(rm, X_forget,       y_forget)   for rm in ref_models]).mean(axis=0)
+            probs_ref_nm = np.stack([self._extract_true_class_probs_predict_proba(rm, self.X_test[ridx], y_test_eff) for rm in ref_models]).mean(axis=0)
             rmia_probs = (probs_tgt_m, probs_ref_m, probs_tgt_nm, probs_ref_nm)
 
         return self._sisa_mia_compute(

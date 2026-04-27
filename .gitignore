@@ -1,6 +1,6 @@
 # ── Datasets ─────────────────────────────────────────────────────────────────
 # All datasets are excluded; download or regenerate per README §4.
-data/
+/data/
 
 # ── Experiment results and generated figures ──────────────────────────────────
 # Reproduce by running cli_commands.txt and sensitivity_analysis.ipynb; see README §6.

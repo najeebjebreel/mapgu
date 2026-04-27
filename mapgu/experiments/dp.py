@@ -331,7 +331,7 @@ class PrivacyExperiments(PrivacyBenchmark):
                 }
             )
 
-    def save_and_print_summary(self) -> None:
+    def save_and_print_summary(self, experiment_tag: str = "") -> None:
         if not self._summary_rows:
             return
         logger.info("=" * 80)
@@ -346,7 +346,8 @@ class PrivacyExperiments(PrivacyBenchmark):
                 f"{int(row['FT Epochs']):<6d} {float(row['Forget Ratio']):<8.4f} "
                 f"{str(row['Metric']):<18} {str(row['Mean±Std']):<20}"
             )
-        out_path = os.path.join(self.dataset_results_dir, f"{self.model_type}_privacy_summary.csv")
+        suffix = f"_{experiment_tag}" if experiment_tag else ""
+        out_path = os.path.join(self.dataset_results_dir, f"{self.model_type}{suffix}_summary.csv")
         save_summary_csv(out_path, self._summary_rows)
         logger.info(f"Saved overall privacy summary to {out_path}")
 
@@ -1222,7 +1223,7 @@ class PrivacyExperiments(PrivacyBenchmark):
                         self._save_kanonymity_results(int(k), float(fr), int(ft_epochs), res)
                         self._log_progress("completed", {"cfg": cfg})
 
-            self.save_and_print_summary()
+            self.save_and_print_summary("kanon")
 
     def run_differential_privacy(self, *, eps_values: List[float], ft_epochs_list: List[int]) -> None:
         with _log_namespace("dp"):
@@ -1291,7 +1292,7 @@ class PrivacyExperiments(PrivacyBenchmark):
                         self._save_dp_results(float(eps), float(fr), int(ft_epochs), res)
                         self._log_progress("completed", {"cfg": cfg})
 
-            self.save_and_print_summary()
+            self.save_and_print_summary("dp")
 
     # ----------------------------------------------------------------------------------
     # Saving

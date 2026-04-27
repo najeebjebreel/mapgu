@@ -161,6 +161,7 @@ python -m mapgu prepare embeddings --in-path data/adult/adult.data
 python -m mapgu prepare kanon --dataset adult  --k-values 30 --skip-existing false
 python -m mapgu prepare kanon --dataset heart  --k-values 30 --skip-existing false
 python -m mapgu prepare kanon --dataset credit --k-values 30 --skip-existing false
+python -m mapgu prepare kanon --dataset cifar10 --k-values 30 --skip-existing false
 
 # Step 1c — DP synthetic data (required for MAPGU_ε experiments)
 python -m mapgu prepare dp --dataset adult  --eps 1 --skip-existing false
@@ -211,7 +212,23 @@ python -m mapgu run --method dp --dataset heart --model xgboost \
   --xgb_n_estimators 100 --xgb_max_depth 7 --xgb_lr 0.5 --xgb_reg_lambda 5 \
   --eps_values 1 --ft_epochs 5 --mia_attacks rmia --rmia_n_ref 1
 
-# Step 5: Inspect results
+# Step 5: Certified-SP (MLP only — not supported for XGBoost)
+python -m mapgu run --method certified_sp --dataset heart --model mlp \
+  --forget_ratios 0.05 --n_repeat 3 \
+  --max_epochs 50 --batch_size 256 \
+  --lr 1e-2 --optimizer adam --scheduler cosine --weight_decay 1e-5 \
+  --use_amp false \
+  --certified_sp_init_model_clip 0.01 --certified_sp_init_model_clip_type clip \
+  --certified_sp_grad_clip 10.0 \
+  --certified_sp_epsilon_renyi_target 1 --certified_sp_delta 1e-5 \
+  --certified_sp_lr 1e-4 --certified_sp_weight_decay 750 \
+  --certified_sp_noise_schedule constant \
+  --post_epochs 5 --post_steps -1 \
+  --post_optimizer adam --post_lr_schedule cosine \
+  --post_max_lr 1e-2 --post_weight_decay 1e-5 \
+  --mia_attacks rmia --rmia_n_ref 1
+
+# Step 6: Inspect results
 python scripts/compose_paper_tables.py --table 4
 ```
 
@@ -345,6 +362,8 @@ All experiment results are saved to `results/<dataset>/` using this scheme:
 {model}_mdp_eps={eps}_fr={fr}.csv           # MAPGU_ε Phase 1 (trained on DP data)
 {model}_mdpd_eps={eps}_fr={fr}_epochs={ft}.csv  # MAPGU_ε Phase 2 (fine-tuned on D)
 {model}_mdpret_eps={eps}_fr={fr}_epochs={ft}.csv # MAPGU_ε Phase 3 (fine-tuned on D_r)
+{model}_kanon_summary.csv                   # MAPGU_k aggregate summary (all phases, k values, runs)
+{model}_dp_summary.csv                      # MAPGU_ε aggregate summary (all phases, ε values, runs)
 {model}_certified_sp_summary.csv            # Certified-SP summary (all phases)
 {model}_runtimes.csv                        # Phase-level runtimes for all methods
 ```

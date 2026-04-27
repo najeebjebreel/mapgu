@@ -140,6 +140,7 @@ def prepare_kanon(
     embeddings_pkl: Optional[str],
     skip_existing: bool,
     perm_type: str = "rowwise",
+    cifar_root: Optional[str] = None,
 ) -> None:
     """
     Output:
@@ -155,8 +156,67 @@ def prepare_kanon(
         X_train, y_train, _X_test, _y_test, preproc = DatasetLoader.load_credit()
     elif dataset == "heart":
         X_train, y_train, _X_test, _y_test, preproc = DatasetLoader.load_heart()
+    elif dataset == "cifar10":
+        import torch
+        from torchvision.datasets import CIFAR10
+        from mapgu.data.privacy.cifar_kanon import build_cifar_kanon_data
+        from mapgu.config import CIFAR_MEAN, CIFAR_STD
+
+        _root = cifar_root if cifar_root is not None else DATA_DIR
+        cifar_train = CIFAR10(root=_root, train=True, download=True)
+        raw = np.asarray(cifar_train.data, dtype=np.float32) / 255.0       # (N, H, W, C)
+        raw = raw.transpose(0, 3, 1, 2)                                      # (N, C, H, W)
+        _mean = np.array(CIFAR_MEAN, dtype=np.float32).reshape(1, 3, 1, 1)
+        _std  = np.array(CIFAR_STD,  dtype=np.float32).reshape(1, 3, 1, 1)
+        images_norm = (raw - _mean) / _std
+        y_arr = np.asarray(cifar_train.targets, dtype=np.int64)
+        device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+
+        for k in k_values:
+            out_dir = os.path.join(KANON_DIR, "cifar10", "cluster=latent", f"seed={seed}", f"k={int(k)}")
+            out_npz = os.path.join(out_dir, "train_anon.npz")
+            out_rt  = os.path.join(out_dir, "runtimes.csv")
+
+            if skip_existing and _exists_nonempty(out_npz) and os.path.exists(out_rt):
+                logger.info("[kanon][skip] exists: %s", out_npz)
+                continue
+
+            _ensure_dir(out_dir)
+
+            t0 = time.time()
+            images_anon, y_anon, feat_summary, anon_summary = build_cifar_kanon_data(
+                images_norm=images_norm.copy(),
+                y=y_arr.copy(),
+                k=int(k),
+                seed=int(seed),
+                device=device,
+            )
+            anon_time = time.time() - t0
+
+            save_npz(out_npz, images_anon, y_anon)
+
+            rt_path = save_kanon_runtimes_csv(
+                out_dir,
+                KAnonRuntimeRow(
+                    dataset="cifar10",
+                    seed=int(seed),
+                    cluster_repr="latent",
+                    k=int(k),
+                    n_train=int(images_norm.shape[0]),
+                    onehot_time_sec=0.0,
+                    repr_time_sec=float(anon_time),
+                    embedding_offline_sec=0.0,
+                    utility_offline_sec=0.0,
+                    anon_time_sec=float(anon_time),
+                    total_time_sec=float(anon_time),
+                ),
+            )
+
+            logger.info("[kanon] cifar10 k=%d repr=latent | %s | %s | anon=%.2fs | %s | %s",
+                        k, feat_summary, anon_summary, anon_time, out_npz, rt_path)
+        return
     else:
-        raise ValueError("k-anonymity preparation supported only for: adult/credit/heart")
+        raise ValueError("k-anonymity preparation supported only for: adult/credit/heart/cifar10")
 
     n_train = int(X_train.shape[0])
 

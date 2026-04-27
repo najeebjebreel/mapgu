@@ -260,11 +260,13 @@ def build_parser() -> argparse.ArgumentParser:
         "kanon",
         help="Prepare k-anonymous training data (MDAV + probabilistic permutation)",
     )
-    kanon_p.add_argument("--dataset", choices=["adult", "credit", "heart"], required=True)
+    kanon_p.add_argument("--dataset", choices=["adult", "credit", "heart", "cifar10"], required=True)
     kanon_p.add_argument("--k-values", nargs="+", type=int, default=[30])
-    kanon_p.add_argument("--cluster-repr", choices=["onehot", "tabnet"], default="onehot")
+    kanon_p.add_argument("--cluster-repr", choices=["onehot", "tabnet", "latent"], default="onehot")
     kanon_p.add_argument("--embeddings-pkl", default=None,
                          help="Path to embeddings.pkl (required when --cluster-repr tabnet)")
+    kanon_p.add_argument("--cifar-root", default=None,
+                         help="Root directory containing cifar-10-batches-py/ (default: data/)")
     kanon_p.add_argument("--seed", type=int, default=7)
     kanon_p.add_argument("--skip-existing", type=_str_to_bool, default=False, metavar="{true,false}")
 
@@ -586,6 +588,7 @@ def _prepare_kanon(args: argparse.Namespace) -> None:
         seed=args.seed,
         embeddings_pkl=args.embeddings_pkl,
         skip_existing=args.skip_existing,
+        cifar_root=getattr(args, "cifar_root", None),
     )
 
 
