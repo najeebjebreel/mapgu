@@ -98,7 +98,7 @@ def _fmt_fr(fr: float) -> str:
 
 
 def _fmt_eps(eps: float) -> str:
-    return str(float(eps))
+    return f"{float(eps):.12g}"
 
 
 def _certified_sp_fr_str(fr: float) -> str:
@@ -194,7 +194,7 @@ def load_certified_sp_post_metrics(certified_sp_csv: Optional[str], fr: float) -
             except (ValueError, TypeError):
                 continue
             raw_metric = row.get("Metric", "").strip()
-            # Strip trailing unit annotation " (%)" or " (s)"
+            # Strip trailing unit annotation " (%)" or " (s)" for backward compat
             metric = raw_metric.replace(" (%)", "").replace(" (s)", "").strip()
             try:
                 mean_val = float(row.get("Mean", "nan"))
@@ -203,9 +203,9 @@ def load_certified_sp_post_metrics(certified_sp_csv: Optional[str], fr: float) -
                 continue
             if metric in ("Test Accuracy", "Test AUC"):
                 out[metric] = (mean_val, std_val)
-            elif metric == "MIA AUC":
+            elif metric in ("MIA AUC", "MIA AUC (RMIA)"):
                 out["MIA AUC (RMIA)"] = (mean_val, std_val)
-            elif metric == "MIA TPR@1%FPR":
+            elif metric in ("MIA TPR@1%FPR", "MIA TPR@1%FPR (RMIA)"):
                 out["MIA TPR@1%FPR (RMIA)"] = (mean_val, std_val)
     return out
 
@@ -402,15 +402,15 @@ def _get_method_rows(
     k_ds = KANON_K_PER_DATASET.get(dataset, k)
     before = load_metrics(_p(f"{model}_mk={k_ds}_d_fr={fr_s}_epochs={ft}.csv"))
     after  = load_metrics(_p(f"{model}_mk={k_ds}_dret_fr={fr_s}_epochs={ft}.csv"))
-    rows.append((rf"MAPGU ($k$={k_ds})", before, after))
+    rows.append((rf"MAPGU$_k$ ($k$={k_ds})", before, after))
 
-    # ── MAPGU_eps (DP) ─────────────────────────────────────────────────────
+    # ── MAPGU_ε (DP) ───────────────────────────────────────────────────────
     before = load_metrics(_p(f"{model}_mdpd_eps={eps_s}_fr={fr_s}_epochs={ft}.csv"))
     after  = load_metrics(_p(f"{model}_mdpret_eps={eps_s}_fr={fr_s}_epochs={ft}.csv"))
     eps_disp = int(eps) if eps == int(eps) else eps
-    rows.append((rf"MAPGU ($\varepsilon$={eps_disp})", before, after))
+    rows.append((rf"MAPGU$_\varepsilon$ ($\varepsilon$={eps_disp})", before, after))
 
-    # ── Certified-SP (CERTIFIED_SP) ───────────────────────────────────────────────
+    # ── Certified-SP ───────────────────────────────────────────────────────
     if model != "xgboost":
         certified_sp_csv = find_certified_sp_csv(dataset, model, fr, seed, d)
         before   = load_metrics(_p(f"{model}_m_d_fr={fr_s}.csv"))  # same init as retrain
@@ -795,9 +795,9 @@ def build_table_efficiency_headtohead(
              "baseline", "-", ["retrain_Dr"]),
             (rf"SISA ($S$={S})",
              "sisa", f"S={S}", ["retrain_affected_shard_Dr"]),
-            (rf"MAPGU ($k$={k_ds})",
+            (rf"MAPGU$_k$ ($k$={k_ds})",
              "kanon", f"k={k_ds}", ["ft_Mk_Dr"]),
-            (rf"MAPGU ($\varepsilon$={eps_disp})",
+            (rf"MAPGU$_\varepsilon$ ($\varepsilon$={eps_disp})",
              "dp", f"eps={_fmt_eps(eps)}", ["ft_Meps_Dr"]),
             (rf"Certified-SP ($\varepsilon$={CERTIFIED_SP_EPS}, $\delta$={CERTIFIED_SP_DELTA})",
              "certified_sp", f"eps={CERTIFIED_SP_EPS}", ["unlearn_noisy", "post_ft"]),
@@ -927,9 +927,9 @@ def build_table_efficiency_phases(
 
     body_lines: List[str] = []
 
-    # ── MAPGU (k-anon) ─────────────────────────────────────────────────────
+    # ── MAPGU_k (k-anon) ───────────────────────────────────────────────────
     body_lines += _section_header(
-        rf"MAPGU ($k$): k-anon prep $\to$ train $M_k$ $\to$ "
+        rf"MAPGU$_k$: k-anon prep $\to$ train $M_k$ $\to$ "
         rf"fine-tune on $\mathcal{{D}}$ $\to$ fine-tune on $\mathcal{{D}}_r$"
     )
     body_lines.append(_row(
@@ -954,9 +954,9 @@ def build_table_efficiency_phases(
         cells.append(_mval(total) if total > 0 else MISSING)
         body_lines.append(_row(*cells))
 
-    # ── MAPGU (DP) ─────────────────────────────────────────────────────────
+    # ── MAPGU_ε (DP) ───────────────────────────────────────────────────────
     body_lines += _section_header(
-        rf"MAPGU ($\varepsilon$={eps_disp}): [embed]$^\dagger$ $\to$ DP synthesis $\to$ "
+        rf"MAPGU$_\varepsilon$ ($\varepsilon$={eps_disp}): [embed]$^\dagger$ $\to$ DP synthesis $\to$ "
         rf"train $M_\varepsilon$ $\to$ fine-tune on $\mathcal{{D}}$ $\to$ fine-tune on $\mathcal{{D}}_r$"
     )
     body_lines.append(_row(
@@ -1058,7 +1058,7 @@ def build_table_forget_ratio(
          lambda fr_s: f"{model}_mk={k}_dret_fr={fr_s}_epochs={ft}.csv"),
         (rf"MAPGU$_\varepsilon$ ($\varepsilon$={int(eps) if eps == int(eps) else eps})",
          lambda fr_s: f"{model}_mdpret_eps={_fmt_eps(eps)}_fr={fr_s}_epochs={ft}.csv"),
-        ("CERTIFIED_SP", None),  # handled via glob
+        (rf"Certified-SP ($\varepsilon$={CERTIFIED_SP_EPS}, $\delta$={CERTIFIED_SP_DELTA})", None),  # handled via glob
     ]
 
     fr_labels = [rf"{int(round(fr * 100))}\%" for fr in fr_values]

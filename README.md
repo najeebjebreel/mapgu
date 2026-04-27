@@ -2,8 +2,8 @@
 
 Artifact for the paper **"MAPGU: Model-Agnostic Privacy-Guaranteed Unlearning"**.
 
-This repository contains all code, pre-processed data, and scripts needed to
-reproduce tables and figures reported in the paper.
+This repository contains all code and scripts needed to reproduce tables and
+figures reported in the paper. Datasets must be downloaded separately (see §4).
 
 ---
 
@@ -63,8 +63,8 @@ mapgu-reprod/
 │   ├── experiments/              # Experiment runners (one per method)
 │   │   ├── base.py               # Baseline / Retrain
 │   │   ├── sisa.py               # SISA
-│   │   ├── dp.py                 # MAPGU_k and MAPGU_ε
-│   │   ├── kanon.py
+│   │   ├── dp.py                 # MAPGU_ε (DP)
+│   │   ├── kanon.py              # MAPGU_k (k-anonymity)
 │   │   └── certified_sp.py       # Certified-SP
 │   ├── models/                   # MLP, XGBoost, ResNet-18, DenseNet factories
 │   ├── training/                 # Generic trainer + Certified-SP trainer
@@ -77,14 +77,14 @@ mapgu-reprod/
 ├── sensitivity_analysis.ipynb    # Interactive sensitivity-study plots (Figs 2–5)
 ├── cli_commands.txt              # All paper CLI commands in run order
 ├── environment.yml               # Conda environment specification
-├── data/
-│   ├── adult/                    # Adult Income dataset (pre-processed, included)
-│   ├── heart/                    # Heart Disease dataset (included)
-│   ├── GiveMeSomeCredit/         # Credit dataset (included)
-│   ├── cifar-10-batches-py/      # CIFAR-10 binary batches (included)
-│   ├── k_anon_data/              # Pre-generated k-anonymous data (partial; regenerated on demand)
-│   └── dp_data/                  # DP synthetic data (download or generate; see §4)
-└── results/                      # Experiment outputs (pre-populated for quick start)
+├── data/                         # [gitignored] — populate per §4 before running
+│   ├── adult/                    # Adult Income dataset (download; see §4)
+│   ├── heart/                    # Heart Disease dataset (download; see §4)
+│   ├── GiveMeSomeCredit/         # Credit dataset (download; see §4)
+│   ├── cifar-10-batches-py/      # CIFAR-10 binary batches (auto-downloaded; see §4)
+│   ├── k_anon_data/              # k-anonymous data (regenerated automatically on demand)
+│   └── dp_data/                  # DP synthetic data (generate via Step 1; see §4)
+└── results/                      # [gitignored] — populated by running experiments
     ├── adult/
     ├── heart/
     ├── credit/
@@ -127,15 +127,21 @@ You should see the `mapgu run` / `mapgu prepare` subcommands listed.
 
 ## 4. Datasets
 
-All three tabular datasets are already included under `data/`. CIFAR-10
-binary batches are also included under `data/cifar-10-batches-py/`.
+Datasets are not included in the repository and must be downloaded separately.
+Place each file at the path shown before running any experiments.
 
-| Dataset | Location | Status |
+| Dataset | Source | Target path |
 |---|---|---|
-| Adult Income | `data/adult/` | Included |
-| Heart Disease | `data/heart/cardio_train.csv` | Included |
-| Credit (GiveMeSomeCredit) | `data/GiveMeSomeCredit/cs-training.csv` | Included |
-| CIFAR-10 | `data/cifar-10-batches-py/` | Included |
+| Adult Income | [UCI ML Repository](https://archive.ics.uci.edu/dataset/2/adult) — download `adult.data` | `data/adult/adult.data` |
+| Heart Disease | [Kaggle — Cardiovascular Disease](https://www.kaggle.com/datasets/sulianova/cardiovascular-disease-dataset) — download `cardio_train.csv` | `data/heart/cardio_train.csv` |
+| Credit (GiveMeSomeCredit) | [Kaggle — GiveMeSomeCredit](https://www.kaggle.com/c/GiveMeSomeCredit/data) — download `cs-training.csv` | `data/GiveMeSomeCredit/cs-training.csv` |
+| CIFAR-10 | Auto-downloaded on first run (see below) | `data/cifar-10-batches-py/` |
+
+**CIFAR-10** is fetched automatically by PyTorch the first time you run a
+CIFAR-10 experiment. Add `--cifar_download true` to any `mapgu run` command
+that targets `--dataset cifar10`, or download and extract the archive manually
+from the [CIFAR-10 page](https://www.cs.toronto.edu/~kriz/cifar.html) to
+`data/cifar-10-batches-py/`.
 
 ### Privacy-protected data
 
@@ -306,7 +312,7 @@ and run all cells. Figures are saved as PDFs under `results/figures/`.
 
 | Table | Content | Script | Input CSVs | Output |
 |---|---|---|---|---|
-| **Table 4** | Utility + MIA before/after unlearning (main results) | `compose_paper_tables.py --table 4` | `results/<dataset>/{model}_m_d_fr=0.05.csv` (before) `results/<dataset>/{model}_mret_dret_fr=0.05.csv` (retrain) `results/<dataset>/{model}_mk=30_d_fr=0.05_epochs=5.csv` (MAPGU_k before) `results/<dataset>/{model}_mk=30_dret_fr=0.05_epochs=5.csv` (MAPGU_k after) `results/<dataset>/{model}_mdpd_eps=1.0_fr=0.05_epochs=5.csv` (MAPGU_ε before) `results/<dataset>/{model}_mdpret_eps=1.0_fr=0.05_epochs=5.csv` (MAPGU_ε after) `results/<dataset>/{model}_certified_sp_summary.csv` (Certified-SP) | `results/paper_tables/table_4_quality_{model}.tex` |
+| **Table 4** | Utility + MIA before/after unlearning (main results) | `compose_paper_tables.py --table 4` | `results/<dataset>/{model}_m_d_fr=0.05.csv` (before) `results/<dataset>/{model}_mret_dret_fr=0.05.csv` (retrain) `results/<dataset>/{model}_mk=30_d_fr=0.05_epochs=5.csv` (MAPGU_k before) `results/<dataset>/{model}_mk=30_dret_fr=0.05_epochs=5.csv` (MAPGU_k after) `results/<dataset>/{model}_mdpd_eps=1_fr=0.05_epochs=5.csv` (MAPGU_ε before) `results/<dataset>/{model}_mdpret_eps=1_fr=0.05_epochs=5.csv` (MAPGU_ε after) `results/<dataset>/{model}_certified_sp_summary.csv` (Certified-SP) | `results/paper_tables/table_4_quality_{model}.tex` |
 | **Table 6a** | Head-to-head unlearning wall time | `compose_paper_tables.py --table 6a` | `results/<dataset>/{model}_runtimes.csv` | `results/paper_tables/table_6a_efficiency_headtohead.tex` |
 | **Table 6b** | Phase-by-phase runtime breakdown | `compose_paper_tables.py --table 6b` | `results/<dataset>/{model}_runtimes.csv` | `results/paper_tables/table_6b_efficiency_phases.tex` |
 | **Table 7** | FT-epoch sensitivity — CIFAR-10/ResNet-18, MAPGU_ε + Certified-SP, epochs 3/5/10/20/30/50 | `compose_paper_tables.py --table 7` | `results/sensitivity_studies/cifar10_resnet18_eps_ft_epochs_onecycle_lr5e-2/cifar10/*.csv` `results/sensitivity_studies/cifar10_resnet18_certified_sp_post_epochs_onecycle_lr5e-2/cifar10/*_summary.csv` | `results/paper_tables/table_7_ft_epochs.tex` |
@@ -343,7 +349,7 @@ All experiment results are saved to `results/<dataset>/` using this scheme:
 {model}_runtimes.csv                        # Phase-level runtimes for all methods
 ```
 
-Where `fr=0.05` (forget ratio 5%), `k=30`, `eps=1.0`, `ft=5` (fine-tune epochs),
+Where `fr=0.05` (forget ratio 5%), `k=30`, `eps=1`, `ft=5` (fine-tune epochs),
 and `S=5` (SISA shards) are the paper's main configuration values.
 
 Each CSV has three columns: `Metric`, `Mean`, `Std` (means and standard
@@ -455,7 +461,4 @@ next to the results CSV. The `--progress_path` flag overrides the default path.
 ## Citation
 
 *To be added upon publication.*
-
-## Funding
-
 

@@ -7,7 +7,7 @@
 # STEP 1  ONE-TIME preparation (writes runtimes.csv into data dirs)
 # STEP 2  Baseline / SISA experiments
 # STEP 3  k-anonymity / DP experiments  (read prep runtimes from STEP 1)
-# STEP 4  CERTIFIED_SP experiments
+# STEP 4  Certified-SP experiments
 # STEP 5  Focused sensitivity studies
 #
 # Conventions:
@@ -136,7 +136,7 @@
 
 
 # ============================================================
-# STEP 4 — CERTIFIED_SP  (independent of prep data; records 3-phase runtime)
+# STEP 4 — Certified-SP  (independent of prep data; records 3-phase runtime)
 # ============================================================
 # Phase-level runtimes saved to results/<dataset>/<model>_runtimes.csv:
 #   train_baseline | unlearn_noisy | post_ft
@@ -241,7 +241,7 @@
   --eps_values 0.5 1 5 10 100 --ft_epochs 3 5 10 20 30 50 \
   --mia_attacks rmia --rmia_n_ref 8
 
-# 5e. CIFAR-10 / ResNet-18 — CERTIFIED_SP impact of epsilon and fine-tuning epochs
+# 5e. CIFAR-10 / ResNet-18 — Certified-SP impact of epsilon and fine-tuning epochs
 # python -m mapgu run --method certified_sp --dataset cifar10 --model resnet18 \
   --results_subdir sensitivity_studies/cifar10_resnet18_certified_sp_post_epochs_onecycle_lr5e-2 \
   --forget_ratios 0.05 --n_repeat 5 \
@@ -259,7 +259,7 @@
   --mia_attacks rmia --rmia_n_ref 8
 
 # 5f. Adult / MLP — forget ratio sensitivity
-#     Methods: Retrain (oracle), SISA, CERTIFIED_SP, MAPGU (Ours = k-anon k=30 + DP eps=1)
+#     Methods: Retrain (oracle), SISA, MAPGU_k (k=30), MAPGU_ε (ε=1), Certified-SP (ε=1)
 #     Forget ratios: 1 / 5 / 10 / 25 / 50 / 75 / 90 %
 #     All other hyperparameters identical to canonical Adult-MLP runs (Steps 2–4).
 #     Results isolated under: results/sensitivity_studies/adult_mlp_forget_ratio/
@@ -306,9 +306,7 @@
   --eps_values 1 --ft_epochs 5 \
   --mia_attacks rmia --rmia_n_ref 8
 
-
-
-# 5f-v. CERTIFIED_SP  (epsilon_renyi=1, delta=1e-5 — same as main)
+# 5f-v. Certified-SP  (epsilon_renyi=1, delta=1e-5 — same as main)
 # python -m mapgu run --method certified_sp --dataset adult --model mlp \
   --results_subdir sensitivity_studies/adult_mlp_forget_ratio \
   --forget_ratios 0.01 0.05 0.10 0.25 0.50 0.75 0.9 \
@@ -338,8 +336,8 @@
 #                                 all cells show mean±std over 5 runs
 #  6a Head-to-head efficiency   — unlearning wall time (s) for every dataset×model combo,
 #                                 plus average speedup over Retrain
-#  6b Phase-by-phase breakdown  — per-phase runtimes for MAPGU_k, MAPGU_ε, and CERTIFIED_SP
-#  7  FT-epoch sensitivity      — test Acc. and MIA AUC for CIFAR-10/ResNet-18 (MAPGU_ε + CERTIFIED_SP)
+#  6b Phase-by-phase breakdown  — per-phase runtimes for MAPGU_k, MAPGU_ε, and Certified-SP
+#  7  FT-epoch sensitivity      — test Acc. and MIA AUC for CIFAR-10/ResNet-18 (MAPGU_ε + Certified-SP)
 #                                 at post/ft epochs 3 / 5 / 10 / 20 / 30 / 50
 #  8  Forget ratio sensitivity  — test Acc. and MIA AUC for Adult/MLP at
 #                                 forget ratios 1 / 5 / 10 / 25 / 50 / 75 / 90 %

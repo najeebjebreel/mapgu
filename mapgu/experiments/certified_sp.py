@@ -551,16 +551,16 @@ def _run_certified_sp_impl(
             "Training Time (s)": _ms(common_acc["baseline_time_s"]),
             "Train Accuracy (%)": _ms(common_acc["baseline_train_%"]),
             "Test Accuracy (%)": _ms(common_acc["baseline_test_%"]),
-            "MIA AUC (%)": _ms(common_acc["baseline_mia_auc_%"]),
-            "MIA TPR@1%FPR (%)": _ms(common_acc["baseline_mia_tpr_%"]),
+            "MIA AUC (RMIA)": _ms(common_acc["baseline_mia_auc_%"]),
+            "MIA TPR@1%FPR (RMIA)": _ms(common_acc["baseline_mia_tpr_%"]),
         }
         unlearn_out = {
             "Unlearn Time (s)": _ms(common_acc["unlearn_time_s"]),
             "Retain Accuracy (%)": _ms(common_acc["unlearn_retain_%"]),
             "Forget Accuracy (%)": _ms(common_acc["unlearn_forget_%"]),
             "Test Accuracy (%)": _ms(common_acc["unlearn_test_%"]),
-            "MIA AUC (%)": _ms(common_acc["unlearn_mia_auc_%"]),
-            "MIA TPR@1%FPR (%)": _ms(common_acc["unlearn_mia_tpr_%"]),
+            "MIA AUC (RMIA)": _ms(common_acc["unlearn_mia_auc_%"]),
+            "MIA TPR@1%FPR (RMIA)": _ms(common_acc["unlearn_mia_tpr_%"]),
         }
         bookkeeping_common_out = {
             "CERTIFIED_SP Steps T": _ms(common_acc["certified_sp_T"]),
@@ -581,8 +581,8 @@ def _run_certified_sp_impl(
                 "Retain Accuracy (%)": _ms(post_acc["post_retain_%"]),
                 "Forget Accuracy (%)": _ms(post_acc["post_forget_%"]),
                 "Test Accuracy (%)": _ms(post_acc["post_test_%"]),
-                "MIA AUC (%)": _ms(post_acc["post_mia_auc_%"]),
-                "MIA TPR@1%FPR (%)": _ms(post_acc["post_mia_tpr_%"]),
+                "MIA AUC (RMIA)": _ms(post_acc["post_mia_auc_%"]),
+                "MIA TPR@1%FPR (RMIA)": _ms(post_acc["post_mia_tpr_%"]),
             }
             bookkeeping_out = dict(bookkeeping_common_out)
             bookkeeping_out["CERTIFIED_SP Post Steps"] = _ms(post_acc["post_steps"])

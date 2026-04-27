@@ -474,7 +474,7 @@ class PrivacyExperiments(PrivacyBenchmark):
                 os.path.join(base, f"{self.model_type}_mk={k}_dret_fr={forget_ratio}_epochs={ft_epochs}.csv"),
             ]
         if experiment_type == "differential_privacy":
-            eps = k_or_eps
+            eps = _fmt_eps(k_or_eps)
             return [
                 os.path.join(base, f"{self.model_type}_mdp_eps={eps}_fr={forget_ratio}.csv"),
                 os.path.join(base, f"{self.model_type}_mdpd_eps={eps}_fr={forget_ratio}_epochs={ft_epochs}.csv"),
@@ -1306,8 +1306,8 @@ class PrivacyExperiments(PrivacyBenchmark):
             "Total Time": _ms(results["phase1"]["total_times"]),
             "Train Accuracy": _ms(results["phase1"]["train_accs"]),
             "Test Accuracy": _ms(results["phase1"]["test_accs"]),
-            "MIA AUC": _ms(results["phase1"]["mia_aucs"]),
-            "MIA TPR@1%FPR": _ms(results["phase1"]["mia_tprs"]),
+            "MIA AUC (RMIA)": _ms(results["phase1"]["mia_aucs"]),
+            "MIA TPR@1%FPR (RMIA)": _ms(results["phase1"]["mia_tprs"]),
         }
         f1 = os.path.join(base_path, f"{self.model_type}_mk={k}_dk_fr={forget_ratio}.csv")
         self._save_results(f1, out1)
@@ -1325,8 +1325,8 @@ class PrivacyExperiments(PrivacyBenchmark):
             "Training Time": _ms(results["phase2"]["times"]),
             "Train Accuracy": _ms(results["phase2"]["train_accs"]),
             "Test Accuracy": _ms(results["phase2"]["test_accs"]),
-            "MIA AUC": _ms(results["phase2"]["mia_aucs"]),
-            "MIA TPR@1%FPR": _ms(results["phase2"]["mia_tprs"]),
+            "MIA AUC (RMIA)": _ms(results["phase2"]["mia_aucs"]),
+            "MIA TPR@1%FPR (RMIA)": _ms(results["phase2"]["mia_tprs"]),
         }
         f2 = os.path.join(base_path, f"{self.model_type}_mk={k}_d_fr={forget_ratio}_epochs={ft_epochs}.csv")
         self._save_results(f2, out2, metadata={"FT Epochs": int(ft_epochs)})
@@ -1345,8 +1345,8 @@ class PrivacyExperiments(PrivacyBenchmark):
             "Retain Accuracy": _ms(results["phase3"]["retain_accs"]),
             "Forget Accuracy": _ms(results["phase3"]["forget_accs"]),
             "Test Accuracy": _ms(results["phase3"]["test_accs"]),
-            "MIA AUC": _ms(results["phase3"]["mia_aucs"]),
-            "MIA TPR@1%FPR": _ms(results["phase3"]["mia_tprs"]),
+            "MIA AUC (RMIA)": _ms(results["phase3"]["mia_aucs"]),
+            "MIA TPR@1%FPR (RMIA)": _ms(results["phase3"]["mia_tprs"]),
         }
         f3 = os.path.join(base_path, f"{self.model_type}_mk={k}_dret_fr={forget_ratio}_epochs={ft_epochs}.csv")
         self._save_results(f3, out3, metadata={"FT Epochs": int(ft_epochs)})
@@ -1387,10 +1387,11 @@ class PrivacyExperiments(PrivacyBenchmark):
             "Total Time": _ms(results["phase1"]["total_times"]),
             "Train Accuracy": _ms(results["phase1"]["train_accs"]),
             "Test Accuracy": _ms(results["phase1"]["test_accs"]),
-            "MIA AUC": _ms(results["phase1"]["mia_aucs"]),
-            "MIA TPR@1%FPR": _ms(results["phase1"]["mia_tprs"]),
+            "MIA AUC (RMIA)": _ms(results["phase1"]["mia_aucs"]),
+            "MIA TPR@1%FPR (RMIA)": _ms(results["phase1"]["mia_tprs"]),
         }
-        f1 = os.path.join(base_path, f"{self.model_type}_mdp_eps={eps}_fr={forget_ratio}.csv")
+        _eps = _fmt_eps(eps)
+        f1 = os.path.join(base_path, f"{self.model_type}_mdp_eps={_eps}_fr={forget_ratio}.csv")
         self._save_results(f1, out1)
         self._append_summary_rows(
             experiment="dp",
@@ -1406,10 +1407,10 @@ class PrivacyExperiments(PrivacyBenchmark):
             "Training Time": _ms(results["phase2"]["times"]),
             "Train Accuracy": _ms(results["phase2"]["train_accs"]),
             "Test Accuracy": _ms(results["phase2"]["test_accs"]),
-            "MIA AUC": _ms(results["phase2"]["mia_aucs"]),
-            "MIA TPR@1%FPR": _ms(results["phase2"]["mia_tprs"]),
+            "MIA AUC (RMIA)": _ms(results["phase2"]["mia_aucs"]),
+            "MIA TPR@1%FPR (RMIA)": _ms(results["phase2"]["mia_tprs"]),
         }
-        f2 = os.path.join(base_path, f"{self.model_type}_mdpd_eps={eps}_fr={forget_ratio}_epochs={ft_epochs}.csv")
+        f2 = os.path.join(base_path, f"{self.model_type}_mdpd_eps={_eps}_fr={forget_ratio}_epochs={ft_epochs}.csv")
         self._save_results(f2, out2, metadata={"FT Epochs": int(ft_epochs)})
         self._append_summary_rows(
             experiment="dp",
@@ -1426,10 +1427,10 @@ class PrivacyExperiments(PrivacyBenchmark):
             "Retain Accuracy": _ms(results["phase3"]["retain_accs"]),
             "Forget Accuracy": _ms(results["phase3"]["forget_accs"]),
             "Test Accuracy": _ms(results["phase3"]["test_accs"]),
-            "MIA AUC": _ms(results["phase3"]["mia_aucs"]),
-            "MIA TPR@1%FPR": _ms(results["phase3"]["mia_tprs"]),
+            "MIA AUC (RMIA)": _ms(results["phase3"]["mia_aucs"]),
+            "MIA TPR@1%FPR (RMIA)": _ms(results["phase3"]["mia_tprs"]),
         }
-        f3 = os.path.join(base_path, f"{self.model_type}_mdpret_eps={eps}_fr={forget_ratio}_epochs={ft_epochs}.csv")
+        f3 = os.path.join(base_path, f"{self.model_type}_mdpret_eps={_eps}_fr={forget_ratio}_epochs={ft_epochs}.csv")
         self._save_results(f3, out3, metadata={"FT Epochs": int(ft_epochs)})
         self._append_summary_rows(
             experiment="dp",
@@ -1442,7 +1443,7 @@ class PrivacyExperiments(PrivacyBenchmark):
         )
 
         _rt = os.path.join(base_path, f"{self.model_type}_runtimes.csv")
-        _p = f"eps={eps}"
+        _p = f"eps={_eps}"
         _fr = float(forget_ratio)
         _n1 = len(results["phase1"]["prep_times"])
         _n2 = len(results["phase2"]["times"])
