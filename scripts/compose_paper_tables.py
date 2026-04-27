@@ -2,9 +2,6 @@
 
 Tables generated
 ----------------
-  1   Dataset statistics                         (static)
-  2   Method overview                            (static)
-  3   Training hyperparameters                   (static)
   4   Utility (Bef/Aft/Δ) + MIA (AUC/TPR@1%) — merged, per model: mlp / xgboost / resnet18
   6a  Head-to-head unlearning efficiency
   6b  Phase-by-phase runtime breakdown
@@ -365,93 +362,6 @@ def _latex_table(
     return "\n".join(lines)
 
 
-# ---------------------------------------------------------------------------
-# Table 1 — Dataset statistics  (static)
-# ---------------------------------------------------------------------------
-
-def build_table_1() -> str:
-    body = [
-        r"Dataset & Domain & Train & Test & Features & Classes & Forget (5\%) \\",
-        r"\midrule",
-        r"Adult Income  & Tabular & 32{,}561 & 16{,}281 & 108$^\dagger$ & 2 & 1{,}628 \\",
-        r"Heart Disease & Tabular & 56{,}000 &  14{,}000 & 11 & 2 & 2{,}800 \\",
-        r"Credit        & Tabular & 112{,}000 & 28{,}000 & 10 & 2 & 5{,}600 \\",
-        r"CIFAR-10      & Vision  & 50{,}000 & 10{,}000 & $3{\times}32{\times}32$ & 10 & 2{,}500 \\",
-        r"\multicolumn{7}{l}{\scriptsize $^\dagger$ After one-hot encoding of categorical features.}",
-    ]
-    return _latex_table(
-        body,
-        caption="Dataset statistics used in all experiments.",
-        label="tab:datasets",
-        colspec=r"l l r r r r r",
-    )
-
-
-# ---------------------------------------------------------------------------
-# Table 2 — Method overview  (static)
-# ---------------------------------------------------------------------------
-
-def build_table_2() -> str:
-    body = [
-        r"Method & Full name & Core idea & Unlearning cost \\",
-        r"\midrule",
-        r"Retrain & Full retrain on $\mathcal{D}_r$"
-        r" & Exact gold standard; retrain from scratch on retain set"
-        r" & Full training on $|\mathcal{D}_r|$ \\",
-        r"\addlinespace",
-        r"SISA & Sharded Isolated Sliced Aggregated"
-        r" & Trains on disjoint shards with checkpoints; only affected shards are retrained"
-        r" & Retrain 1 shard ($\approx 1/S$ of data) \\",
-        r"\addlinespace",
-        r"MAPGU$_k$ (Ours) & $k$-Anonymity unlearning"
-        r" & Trains on $k$-anonymous data; forgets by fine-tuning on $\mathcal{D}_r$"
-        r" & Fine-tune on $\mathcal{D}_r$ \\",
-        r"\addlinespace",
-        r"MAPGU$_\varepsilon$ (Ours) & DP unlearning"
-        r" & Trains on differentially private synthetic data; forgets by fine-tuning"
-        r" & Fine-tune on $\mathcal{D}_r$ \\",
-        r"\addlinespace",
-        r"CERTIFIED_SP & Privacy-Aware Bayesian Inference"
-        r" & Injects calibrated Gaussian noise during an unlearning pass"
-        r" & Noisy gradient descent $+$ post fine-tune \\",
-    ]
-    return _latex_table(
-        body,
-        caption="Overview of unlearning methods compared in this work.",
-        label="tab:methods",
-        colspec=r"l l p{3.5cm} p{3cm}",
-        wide=True,
-    )
-
-
-# ---------------------------------------------------------------------------
-# Table 3 — Training hyperparameters  (static)
-# ---------------------------------------------------------------------------
-
-def build_table_3() -> str:
-    body = [
-        r"Dataset & Model & Optimizer & LR & Scheduler & Epochs & Batch & WD \\",
-        r"\midrule",
-        r"Adult  & MLP     & Adam & $10^{-2}$ & Cosine & 50  & 256 & $10^{-4}$ \\",
-        r"Heart  & MLP     & Adam & $10^{-2}$ & Cosine & 50  & 256 & $10^{-5}$ \\",
-        r"Credit & MLP     & Adam & $10^{-2}$ & Cosine & 50  & 256 & $10^{-5}$ \\",
-        r"\midrule",
-        r"Adult  & XGBoost & ---  & 0.5       & ---    & 100 trees & --- & $\lambda{=}5$ \\",
-        r"Heart  & XGBoost & ---  & 0.5       & ---    & 100 trees & --- & $\lambda{=}5$ \\",
-        r"Credit & XGBoost & ---  & 0.5       & ---    & 200 trees & --- & $\lambda{=}5$ \\",
-        r"\midrule",
-        r"CIFAR-10 & ResNet-18 & SGD & $10^{-1}$ & Cosine & 100 & 256 & $5{\times}10^{-4}$ \\",
-    ]
-    return _latex_table(
-        body,
-        caption=(
-            r"Training hyperparameters. WD = weight decay. "
-            r"Fine-tuning steps use the same optimizer/scheduler with $\texttt{ft\_epochs}=5$."
-        ),
-        label="tab:hyperparams",
-        colspec=r"l l l r l r r r",
-        wide=True,
-    )
 
 
 def _get_method_rows(
@@ -1284,7 +1194,7 @@ def build_table_ft_epochs(
 # Write all tables
 # ---------------------------------------------------------------------------
 
-ALL_TABLE_IDS = ["1", "2", "3", "4", "6a", "6b", "7", "8"]
+ALL_TABLE_IDS = ["4", "6a", "6b", "7", "8"]
 
 
 def write_all_tables(
@@ -1302,13 +1212,7 @@ def write_all_tables(
 
     def _run(tid: str) -> None:
         print(f"Building Table {tid}...")
-        if tid == "1":
-            _save("table_1_datasets",        build_table_1())
-        elif tid == "2":
-            _save("table_2_methods",         build_table_2())
-        elif tid == "3":
-            _save("table_3_hyperparams",     build_table_3())
-        elif tid == "4":
+        if tid == "4":
             for model in MODELS_TABULAR:
                 _save(f"table_4_quality_{model}",
                       build_table_quality(model, results_dir, DATASETS_TABULAR))

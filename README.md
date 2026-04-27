@@ -286,7 +286,7 @@ See the `STEP 5` block in [cli_commands.txt](cli_commands.txt).
 # All LaTeX tables → results/paper_tables/paper_tables.tex
 python scripts/compose_paper_tables.py
 
-# Single table (choices: 1 2 3 4 6a 6b 7 8)
+# Single table (choices: 4 6a 6b 7 8)
 python scripts/compose_paper_tables.py --table 4
 
 # Custom results directory
@@ -306,9 +306,6 @@ and run all cells. Figures are saved as PDFs under `results/figures/`.
 
 | Table | Content | Script | Input CSVs | Output |
 |---|---|---|---|---|
-| **Table 1** | Dataset statistics | `compose_paper_tables.py --table 1` | *(static)* | `results/paper_tables/table_1_datasets.tex` |
-| **Table 2** | Method overview | `compose_paper_tables.py --table 2` | *(static)* | `results/paper_tables/table_2_methods.tex` |
-| **Table 3** | Training hyperparameters | `compose_paper_tables.py --table 3` | *(static)* | `results/paper_tables/table_3_hyperparams.tex` |
 | **Table 4** | Utility + MIA before/after unlearning (main results) | `compose_paper_tables.py --table 4` | `results/<dataset>/{model}_m_d_fr=0.05.csv` (before) `results/<dataset>/{model}_mret_dret_fr=0.05.csv` (retrain) `results/<dataset>/{model}_mk=30_d_fr=0.05_epochs=5.csv` (MAPGU_k before) `results/<dataset>/{model}_mk=30_dret_fr=0.05_epochs=5.csv` (MAPGU_k after) `results/<dataset>/{model}_mdpd_eps=1.0_fr=0.05_epochs=5.csv` (MAPGU_ε before) `results/<dataset>/{model}_mdpret_eps=1.0_fr=0.05_epochs=5.csv` (MAPGU_ε after) `results/<dataset>/{model}_certified_sp_summary.csv` (Certified-SP) | `results/paper_tables/table_4_quality_{model}.tex` |
 | **Table 6a** | Head-to-head unlearning wall time | `compose_paper_tables.py --table 6a` | `results/<dataset>/{model}_runtimes.csv` | `results/paper_tables/table_6a_efficiency_headtohead.tex` |
 | **Table 6b** | Phase-by-phase runtime breakdown | `compose_paper_tables.py --table 6b` | `results/<dataset>/{model}_runtimes.csv` | `results/paper_tables/table_6b_efficiency_phases.tex` |

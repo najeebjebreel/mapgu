@@ -509,9 +509,6 @@ python -m mapgu run --method certified_sp --dataset cifar10 --model resnet18 \
 #
 # Table index
 # -----------
-#  1  Dataset statistics        — rows/cols/classes for Adult, Heart, Credit, CIFAR-10  (static)
-#  2  Method overview           — name, core idea, and unlearning cost for each method   (static) [optional: may be redundant with methods section prose]
-#  3  Training hyperparameters  — optimizer / LR / scheduler / epochs per dataset+model (static)
 #  4  Utility + MIA quality     — Bef./Aft./Δ (test Acc./AUC) and MIA AUC + TPR@1%FPR merged;
 #                                 one sub-table per model family (MLP / XGBoost / ResNet-18);
 #                                 all cells show mean±std over 5 runs
@@ -528,7 +525,7 @@ python -m mapgu run --method certified_sp --dataset cifar10 --model resnet18 \
 # All LaTeX tables → results/paper_tables/
 # python scripts/compose_paper_tables.py
 
-# Single table (choices: 1 2 3 4 6a 6b 7 8)
+# Single table (choices: 4 6a 6b 7 8)
 # python scripts/compose_paper_tables.py --table 4
 
 # Custom output dir
