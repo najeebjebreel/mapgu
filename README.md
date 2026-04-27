@@ -361,26 +361,44 @@ deviations over `--n_repeat` runs).
   The paper used a CUDA 11.6-capable GPU. Enable `--use_amp true` and
   `--pin_memory true` for faster training.
 
-### Per-experiment estimates (paper settings: `--n_repeat 5 --rmia_n_ref 8`)
+### Measured runtimes (n\_repeat = 5, training phases)
 
-| Experiment | Approx. time (GPU) | Approx. time (CPU) |
-|---|---|---|
-| Tabular baseline / SISA (1 dataset × model) | 2–10 min | 5–30 min |
-| Tabular MAPGU_k or MAPGU_ε (1 dataset × model) | 5–20 min | 10–40 min |
-| Tabular Certified-SP (1 dataset × model) | 10–30 min | 30–90 min |
-| CIFAR-10 baseline (ResNet-18) | ~4 h | N/A |
-| CIFAR-10 SISA | ~6 h | N/A |
-| CIFAR-10 MAPGU_k or MAPGU_ε | ~5 h | N/A |
-| CIFAR-10 Certified-SP | ~8 h | N/A |
-| All tabular (6 datasets × methods) | ~3–5 h | ~12–24 h |
-| Sensitivity studies (Step 5) | ~20–40 h GPU | — |
-| **Full paper reproduction** | **~2–3 days GPU** | — |
+Times below are measured wall times from the paper runs (`results/*/runtimes.csv`).
+They cover training phases only; MIA evaluation (`--rmia_n_ref 8`) adds roughly
+20–50 % on top of each figure.
 
-To reproduce only the main tables (Tables 1–4, 6a, 6b) without sensitivity
-studies, skip Steps 5e–5i in `cli_commands.txt`. This reduces total runtime
-to roughly 8–16 GPU-hours.
+**Tabular datasets (CPU)**
 
-For a faster smoke-test with reduced variance, use `--n_repeat 3 --rmia_n_ref 1`.
+| Method | Adult / MLP | Heart / MLP | Credit / MLP | Any / XGBoost |
+|---|---|---|---|---|
+| Retrain | 1.5 min | 2.5 min | 4.5 min | < 5 s |
+| SISA | 3 min | 4.5 min | — | < 5 s |
+| MAPGU_k (full pipeline) | 2.5 min | 2.5 min | 7.5 min | < 1 min |
+| MAPGU_ε (full pipeline) | 1 min | 2.5 min | 7 min | < 1 min |
+| Certified-SP | < 1 min | 1.5 min | 4 min | N/A |
+| **All methods, 1 dataset** | **~9 min** | **~13 min** | **~23 min** | **~1 min** |
+
+**CIFAR-10 / ResNet-18 (GPU)**
+
+| Method | Wall time |
+|---|---|
+| Retrain | ~36 min |
+| MAPGU_k (full pipeline, incl. k-anon prep + train) | ~1.6 h |
+| MAPGU_ε (full pipeline, incl. DP synth + train) | ~48 min |
+| Certified-SP | ~43 min |
+| **All methods** | **~3.7 h** |
+
+**Totals**
+
+| Scope | Time |
+|---|---|
+| Steps 2–4: all tabular datasets | ~50 min |
+| Steps 2–4: CIFAR-10 | ~3.7 h |
+| Step 5: sensitivity studies (tabular) | ~1.5 h |
+| Step 5: sensitivity studies (CIFAR-10, 2 sweeps × 6 configs) | ~8–10 h GPU |
+| **Full paper reproduction** | **~12–15 h GPU** |
+
+For a faster smoke-test, use `--n_repeat 3 --rmia_n_ref 1`.
 
 ---
 
