@@ -1,6 +1,6 @@
 # MAPGU: Model-Agnostic Privacy-Guaranteed Unlearning
 
-Artifact for the paper **"MAPGU: Model-Agnostic Privacy-Guaranteed Unlearning"**.
+Artifact for the paper **"MAPGU: Model-Agnostic Privacy-Guaranteed Unlearning via Training Data Pre-protection"**.
 
 This repository contains all code and scripts needed to reproduce tables and
 figures reported in the paper. Datasets must be downloaded separately (see §4).
