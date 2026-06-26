@@ -1,5 +1,5 @@
 # ============================================================
-# MAPGU CLI COMMANDS — FULL RUNTIME TRAJECTORY
+# eupg CLI COMMANDS — FULL RUNTIME TRAJECTORY
 # ============================================================
 # Run order: STEP 1 → STEP 2 → STEP 3 → STEP 4 → STEP 5
 # Full runner: python scripts/run_cli_commands.py [--dry-run]
@@ -8,7 +8,7 @@
 # STEP 2  Baseline / SISA experiments
 # STEP 3  k-anonymity / DP experiments  (read prep runtimes from STEP 1)
 # STEP 4  Certified-SP experiments
-# STEP 5  Focused sensitivity studies
+# STEP 5  Focused sensitivity studiesh
 #
 # Conventions:
 # - Run-flag order: identity -> scope -> training/model -> performance -> method-specific -> MIA
@@ -33,20 +33,20 @@
 
 # 1a. Adult embeddings — MUST run before Adult kanon/dp prep.
 #     Writes: data/adult/embeddings_runtimes.csv  (embedding, utility, total seconds)
-# python -m mapgu prepare embeddings --in-path data/adult/adult.data
+# python -m eupg prepare embeddings --in-path data/adult/adult.data
 
 # 1b. k-anonymous data — run after 1a for Adult; Heart/Credit have no embedding dep.
 #     Writes: data/k_anon_data/<dataset>/cluster=onehot/seed=7/k=<k>/runtimes.csv
-# python -m mapgu prepare kanon --dataset adult  --k-values 3 5 10 20 30 50 80 100 200 300 500 1000
-# python -m mapgu prepare kanon --dataset heart  --k-values 3 5 10 20 30 50 80 100 200 300 500 1000
-# python -m mapgu prepare kanon --dataset credit --k-values 30
+# python -m eupg prepare kanon --dataset adult  --k-values 3 5 10 20 30 50 80 100 200 300 500 1000
+# python -m eupg prepare kanon --dataset heart  --k-values 3 5 10 20 30 50 80 100 200 300 500 1000
+# python -m eupg prepare kanon --dataset credit --k-values 30
 
 # 1c. DP data — Adult dp prep reads embedding runtimes from step 1a.
 #     Writes: data/dp_data/<dataset>/eps=<eps>/runtimes.csv
-# python -m mapgu prepare dp --dataset adult  --eps 0.25 0.5 1 2 5 10 20 50 100 150 200 300
-# python -m mapgu prepare dp --dataset heart  --eps 0.25 0.5 1 2 5 10 20 50 100 150 200 300
-# python -m mapgu prepare dp --dataset credit --eps 1
-# python -m mapgu prepare dp --dataset cifar10 --eps 0.25 0.5 1 5 10 100
+# python -m eupg prepare dp --dataset adult  --eps 0.25 0.5 1 2 5 10 20 50 100 150 200 300
+# python -m eupg prepare dp --dataset heart  --eps 0.25 0.5 1 2 5 10 20 50 100 150 200 300
+# python -m eupg prepare dp --dataset credit --eps 1
+# python -m eupg prepare dp --dataset cifar10 --eps 0.25 0.5 1 5 10 100
 
 
 # ============================================================
@@ -59,29 +59,29 @@
 #                     results/<dataset>/<model>_runtimes.csv  ← runtime rows appended
 
 # ── ADULT ─────────────────────────────────────────────────────────────────────
-# python -m mapgu run --method baseline --dataset adult --model mlp     --forget_ratios 0.05 --n_repeat 5 --max_epochs 50 --batch_size 256 --lr 1e-2 --optimizer adam --scheduler cosine --weight_decay 1e-4 --use_amp true --mia_attacks rmia --rmia_n_ref 8
-# python -m mapgu run --method baseline --dataset adult --model xgboost --forget_ratios 0.05 --n_repeat 5 --xgb_n_estimators 100 --xgb_max_depth 7 --xgb_lr 0.5 --xgb_reg_lambda 5 --mia_attacks rmia --rmia_n_ref 8
-# python -m mapgu run --method sisa     --dataset adult --model mlp     --forget_ratios 0.05 --n_repeat 5 --max_epochs 50 --batch_size 256 --lr 1e-2 --optimizer adam --scheduler cosine --weight_decay 1e-4 --use_amp true --num_shards 5 --num_slices 10 --mia_attacks rmia --rmia_n_ref 8
-# python -m mapgu run --method sisa     --dataset adult --model xgboost --forget_ratios 0.05 --n_repeat 5 --xgb_n_estimators 100 --xgb_max_depth 7 --xgb_lr 0.5 --xgb_reg_lambda 5 --num_shards 5 --num_slices 10 --mia_attacks rmia --rmia_n_ref 8
+# python -m eupg run --method baseline --dataset adult --model mlp     --forget_ratios 0.05 --n_repeat 5 --max_epochs 50 --batch_size 256 --lr 1e-2 --optimizer adam --scheduler cosine --weight_decay 1e-4 --use_amp true --mia_attacks rmia --rmia_n_ref 8
+# python -m eupg run --method baseline --dataset adult --model xgboost --forget_ratios 0.05 --n_repeat 5 --xgb_n_estimators 100 --xgb_max_depth 7 --xgb_lr 0.5 --xgb_reg_lambda 5 --mia_attacks rmia --rmia_n_ref 8
+# python -m eupg run --method sisa     --dataset adult --model mlp     --forget_ratios 0.05 --n_repeat 5 --max_epochs 50 --batch_size 256 --lr 1e-2 --optimizer adam --scheduler cosine --weight_decay 1e-4 --use_amp true --num_shards 5 --num_slices 10 --mia_attacks rmia --rmia_n_ref 8
+# python -m eupg run --method sisa     --dataset adult --model xgboost --forget_ratios 0.05 --n_repeat 5 --xgb_n_estimators 100 --xgb_max_depth 7 --xgb_lr 0.5 --xgb_reg_lambda 5 --num_shards 5 --num_slices 10 --mia_attacks rmia --rmia_n_ref 8
 
 # ── HEART ─────────────────────────────────────────────────────────────────────
-# python -m mapgu run --method baseline --dataset heart --model mlp     --forget_ratios 0.05 --n_repeat 5 --max_epochs 50 --batch_size 256 --lr 1e-2 --optimizer adam --scheduler cosine --weight_decay 1e-5 --use_amp true --mia_attacks rmia --rmia_n_ref 8
-# python -m mapgu run --method baseline --dataset heart --model xgboost --forget_ratios 0.05 --n_repeat 5 --xgb_n_estimators 100 --xgb_max_depth 7 --xgb_lr 0.5 --xgb_reg_lambda 5 --mia_attacks rmia --rmia_n_ref 8
-# python -m mapgu run --method sisa     --dataset heart --model mlp     --forget_ratios 0.05 --n_repeat 5 --max_epochs 50 --batch_size 256 --lr 1e-2 --optimizer adam --scheduler cosine --weight_decay 1e-5 --use_amp true --num_shards 5 --num_slices 10 --mia_attacks rmia --rmia_n_ref 8
-# python -m mapgu run --method sisa     --dataset heart --model xgboost --forget_ratios 0.05 --n_repeat 5 --xgb_n_estimators 100 --xgb_max_depth 7 --xgb_lr 0.5 --xgb_reg_lambda 5 --num_shards 5 --num_slices 10 --mia_attacks rmia --rmia_n_ref 8
+# python -m eupg run --method baseline --dataset heart --model mlp     --forget_ratios 0.05 --n_repeat 5 --max_epochs 50 --batch_size 256 --lr 1e-2 --optimizer adam --scheduler cosine --weight_decay 1e-5 --use_amp true --mia_attacks rmia --rmia_n_ref 8
+# python -m eupg run --method baseline --dataset heart --model xgboost --forget_ratios 0.05 --n_repeat 5 --xgb_n_estimators 100 --xgb_max_depth 7 --xgb_lr 0.5 --xgb_reg_lambda 5 --mia_attacks rmia --rmia_n_ref 8
+# python -m eupg run --method sisa     --dataset heart --model mlp     --forget_ratios 0.05 --n_repeat 5 --max_epochs 50 --batch_size 256 --lr 1e-2 --optimizer adam --scheduler cosine --weight_decay 1e-5 --use_amp true --num_shards 5 --num_slices 10 --mia_attacks rmia --rmia_n_ref 8
+# python -m eupg run --method sisa     --dataset heart --model xgboost --forget_ratios 0.05 --n_repeat 5 --xgb_n_estimators 100 --xgb_max_depth 7 --xgb_lr 0.5 --xgb_reg_lambda 5 --num_shards 5 --num_slices 10 --mia_attacks rmia --rmia_n_ref 8
 
 # ── CREDIT ────────────────────────────────────────────────────────────────────
-# python -m mapgu run --method baseline --dataset credit --model mlp     --forget_ratios 0.05 --n_repeat 5 --max_epochs 50 --batch_size 256 --lr 1e-2 --optimizer adam --scheduler cosine --weight_decay 1e-5 --use_amp true --mia_attacks rmia --rmia_n_ref 8
-# python -m mapgu run --method baseline --dataset credit --model xgboost --forget_ratios 0.05 --n_repeat 5 --xgb_n_estimators 100 --xgb_max_depth 7 --xgb_lr 0.5 --xgb_reg_lambda 5 --mia_attacks rmia --rmia_n_ref 8
-# python -m mapgu run --method sisa     --dataset credit --model mlp     --forget_ratios 0.05 --n_repeat 5 --max_epochs 50 --batch_size 256 --lr 1e-2 --optimizer adam --scheduler cosine --weight_decay 1e-5 --use_amp true --num_shards 5 --num_slices 10 --mia_attacks rmia --rmia_n_ref 8
-# python -m mapgu run --method sisa     --dataset credit --model xgboost --forget_ratios 0.05 --n_repeat 5 --xgb_n_estimators 200 --xgb_max_depth 9 --xgb_lr 0.5 --xgb_reg_lambda 5 --num_shards 5 --num_slices 10 --mia_attacks rmia --rmia_n_ref 8
+# python -m eupg run --method baseline --dataset credit --model mlp     --forget_ratios 0.05 --n_repeat 5 --max_epochs 50 --batch_size 256 --lr 1e-2 --optimizer adam --scheduler cosine --weight_decay 1e-5 --use_amp true --mia_attacks rmia --rmia_n_ref 8
+# python -m eupg run --method baseline --dataset credit --model xgboost --forget_ratios 0.05 --n_repeat 5 --xgb_n_estimators 100 --xgb_max_depth 7 --xgb_lr 0.5 --xgb_reg_lambda 5 --mia_attacks rmia --rmia_n_ref 8
+# python -m eupg run --method sisa     --dataset credit --model mlp     --forget_ratios 0.05 --n_repeat 5 --max_epochs 50 --batch_size 256 --lr 1e-2 --optimizer adam --scheduler cosine --weight_decay 1e-5 --use_amp true --num_shards 5 --num_slices 10 --mia_attacks rmia --rmia_n_ref 8
+# python -m eupg run --method sisa     --dataset credit --model xgboost --forget_ratios 0.05 --n_repeat 5 --xgb_n_estimators 200 --xgb_max_depth 9 --xgb_lr 0.5 --xgb_reg_lambda 5 --num_shards 5 --num_slices 10 --mia_attacks rmia --rmia_n_ref 8
 
 # ── CIFAR-10 ──────────────────────────────────────────────────────────────────
-# python -m mapgu run --method baseline --dataset cifar10 --model resnet18 --forget_ratios 0.05 \
+# python -m eupg run --method baseline --dataset cifar10 --model resnet18 --forget_ratios 0.05 \
   --n_repeat 5 --max_epochs 100 --batch_size 256 --lr 1e-1 --optimizer sgd --scheduler cosine \
   - weight_decay 5e-4 --num_workers 4 --pin_memory true --use_amp true --mia_attacks rmia --rmia_n_ref 8
 
-# python -m mapgu run --method sisa     --dataset cifar10 --model resnet18 --forget_ratios 0.05 \
+# python -m eupg run --method sisa     --dataset cifar10 --model resnet18 --forget_ratios 0.05 \
   --n_repeat 5 --max_epochs 100 --batch_size 256 --lr 1e-1 --ft_lr 1e-2 --optimizer sgd --scheduler cosine \
   --ft_optimizer sgd --ft_scheduler cosine --weight_decay 5e-4 --num_workers 4 --pin_memory true --use_amp true \
   --num_shards 5 --num_slices 10 --mia_attacks rmia --rmia_n_ref 8
@@ -95,41 +95,41 @@
 #   dp:    adult_embed (Adult only) | dp_generate | train_Meps | ft_Meps_D | ft_Meps_Dr
 
 # ── ADULT k-anon ──────────────────────────────────────────────────────────────
-# python -m mapgu run --method kanon --dataset adult --model mlp     --forget_ratios 0.05 --n_repeat 5 --max_epochs 50 --batch_size 256 --lr 1e-2 --ft_lr 1e-2 --optimizer adam --scheduler cosine --weight_decay 1e-4 --use_amp true --k_values 30 --ft_epochs 5 --kanon_cluster_repr onehot --kanon_mode regenerate --perm-type colwise --mia_attacks rmia --rmia_n_ref 8
-# python -m mapgu run --method kanon --dataset adult --model xgboost --forget_ratios 0.05 --n_repeat 5 --xgb_n_estimators 100 --xgb_max_depth 7 --xgb_lr 0.5 --xgb_reg_lambda 5 --k_values 30 --ft_epochs 5 --kanon_cluster_repr onehot --kanon_mode regenerate --perm-type colwise --mia_attacks rmia --rmia_n_ref 8
+# python -m eupg run --method kanon --dataset adult --model mlp     --forget_ratios 0.05 --n_repeat 5 --max_epochs 50 --batch_size 256 --lr 1e-2 --ft_lr 1e-2 --optimizer adam --scheduler cosine --weight_decay 1e-4 --use_amp true --k_values 30 --ft_epochs 5 --kanon_cluster_repr onehot --kanon_mode regenerate --perm-type colwise --mia_attacks rmia --rmia_n_ref 8
+# python -m eupg run --method kanon --dataset adult --model xgboost --forget_ratios 0.05 --n_repeat 5 --xgb_n_estimators 100 --xgb_max_depth 7 --xgb_lr 0.5 --xgb_reg_lambda 5 --k_values 30 --ft_epochs 5 --kanon_cluster_repr onehot --kanon_mode regenerate --perm-type colwise --mia_attacks rmia --rmia_n_ref 8
 
 # ── HEART k-anon ──────────────────────────────────────────────────────────────
-# python -m mapgu run --method kanon --dataset heart --model mlp     --forget_ratios 0.05 --n_repeat 5 --max_epochs 50 --batch_size 256 --lr 1e-2 --ft_lr 1e-2 --optimizer adam --scheduler cosine --weight_decay 1e-5 --use_amp true --k_values 30 --ft_epochs 5 --kanon_mode regenerate --perm-type colwise --mia_attacks rmia --rmia_n_ref 8
-# python -m mapgu run --method kanon --dataset heart --model xgboost --forget_ratios 0.05 --n_repeat 5 --xgb_n_estimators 100 --xgb_max_depth 7 --xgb_lr 0.5 --xgb_reg_lambda 5 --k_values 30 --ft_epochs 5 --kanon_mode regenerate --perm-type colwise --mia_attacks rmia --rmia_n_ref 8
+# python -m eupg run --method kanon --dataset heart --model mlp     --forget_ratios 0.05 --n_repeat 5 --max_epochs 50 --batch_size 256 --lr 1e-2 --ft_lr 1e-2 --optimizer adam --scheduler cosine --weight_decay 1e-5 --use_amp true --k_values 30 --ft_epochs 5 --kanon_mode regenerate --perm-type colwise --mia_attacks rmia --rmia_n_ref 8
+# python -m eupg run --method kanon --dataset heart --model xgboost --forget_ratios 0.05 --n_repeat 5 --xgb_n_estimators 100 --xgb_max_depth 7 --xgb_lr 0.5 --xgb_reg_lambda 5 --k_values 30 --ft_epochs 5 --kanon_mode regenerate --perm-type colwise --mia_attacks rmia --rmia_n_ref 8
 
 # ── CREDIT k-anon ─────────────────────────────────────────────────────────────
-# python -m mapgu run --method kanon --dataset credit --model mlp     --forget_ratios 0.05 --n_repeat 5 --max_epochs 50 --batch_size 256 --lr 1e-2 --ft_lr 1e-2 --optimizer adam --scheduler cosine --weight_decay 1e-5 --use_amp true --k_values 30 --ft_epochs 5 --kanon_mode regenerate --perm-type colwise --mia_attacks rmia --rmia_n_ref 8
-# python -m mapgu run --method kanon --dataset credit --model xgboost --forget_ratios 0.05 --n_repeat 5 --xgb_n_estimators 100 --xgb_max_depth 7 --xgb_lr 0.5 --xgb_reg_lambda 5 --k_values 30 --ft_epochs 5 --kanon_mode regenerate --perm-type colwise --mia_attacks rmia --rmia_n_ref 8
+# python -m eupg run --method kanon --dataset credit --model mlp     --forget_ratios 0.05 --n_repeat 5 --max_epochs 50 --batch_size 256 --lr 1e-2 --ft_lr 1e-2 --optimizer adam --scheduler cosine --weight_decay 1e-5 --use_amp true --k_values 30 --ft_epochs 5 --kanon_mode regenerate --perm-type colwise --mia_attacks rmia --rmia_n_ref 8
+# python -m eupg run --method kanon --dataset credit --model xgboost --forget_ratios 0.05 --n_repeat 5 --xgb_n_estimators 100 --xgb_max_depth 7 --xgb_lr 0.5 --xgb_reg_lambda 5 --k_values 30 --ft_epochs 5 --kanon_mode regenerate --perm-type colwise --mia_attacks rmia --rmia_n_ref 8
 
 # ── ADULT DP ──────────────────────────────────────────────────────────────────
-# python -m mapgu run --method dp --dataset adult --model mlp     --forget_ratios 0.05 --n_repeat 5 --max_epochs 50 --batch_size 256 --lr 1e-2 --ft_lr 1e-2 --optimizer adam --scheduler cosine --weight_decay 1e-4 --use_amp true --eps_values 1 --ft_epochs 5 --mia_attacks rmia --rmia_n_ref 8
-# python -m mapgu run --method dp --dataset adult --model xgboost --forget_ratios 0.05 --n_repeat 5 --xgb_n_estimators 100 --xgb_max_depth 7 --xgb_lr 0.5 --xgb_reg_lambda 5 --eps_values 1 --ft_epochs 5 --mia_attacks rmia --rmia_n_ref 8
+# python -m eupg run --method dp --dataset adult --model mlp     --forget_ratios 0.05 --n_repeat 5 --max_epochs 50 --batch_size 256 --lr 1e-2 --ft_lr 1e-2 --optimizer adam --scheduler cosine --weight_decay 1e-4 --use_amp true --eps_values 1 --ft_epochs 5 --mia_attacks rmia --rmia_n_ref 8
+# python -m eupg run --method dp --dataset adult --model xgboost --forget_ratios 0.05 --n_repeat 5 --xgb_n_estimators 100 --xgb_max_depth 7 --xgb_lr 0.5 --xgb_reg_lambda 5 --eps_values 1 --ft_epochs 5 --mia_attacks rmia --rmia_n_ref 8
 
 # ── HEART DP ──────────────────────────────────────────────────────────────────
-# python -m mapgu run --method dp --dataset heart --model mlp     --forget_ratios 0.05 --n_repeat 5 --max_epochs 50 --batch_size 256 --lr 1e-2 --ft_lr 1e-2 --optimizer adam --scheduler cosine --weight_decay 1e-5 --use_amp true --eps_values 1 --ft_epochs 5 --mia_attacks rmia --rmia_n_ref 8
-# python -m mapgu run --method dp --dataset heart --model xgboost --forget_ratios 0.05 --n_repeat 5 --xgb_n_estimators 100 --xgb_max_depth 7 --xgb_lr 0.5 --xgb_reg_lambda 5 --eps_values 1 --ft_epochs 5 --mia_attacks rmia --rmia_n_ref 8
+# python -m eupg run --method dp --dataset heart --model mlp     --forget_ratios 0.05 --n_repeat 5 --max_epochs 50 --batch_size 256 --lr 1e-2 --ft_lr 1e-2 --optimizer adam --scheduler cosine --weight_decay 1e-5 --use_amp true --eps_values 1 --ft_epochs 5 --mia_attacks rmia --rmia_n_ref 8
+# python -m eupg run --method dp --dataset heart --model xgboost --forget_ratios 0.05 --n_repeat 5 --xgb_n_estimators 100 --xgb_max_depth 7 --xgb_lr 0.5 --xgb_reg_lambda 5 --eps_values 1 --ft_epochs 5 --mia_attacks rmia --rmia_n_ref 8
 
 # ── CREDIT DP ─────────────────────────────────────────────────────────────────
-# python -m mapgu run --method dp --dataset credit --model mlp     --forget_ratios 0.05 --n_repeat 5 --max_epochs 50 --batch_size 256 --lr 1e-2 --ft_lr 1e-2 --optimizer adam --scheduler cosine --weight_decay 1e-5 --use_amp true --eps_values 1 --ft_epochs 5 --mia_attacks rmia --rmia_n_ref 8
-# python -m mapgu run --method dp --dataset credit --model xgboost --forget_ratios 0.05 --n_repeat 5 --xgb_n_estimators 100 --xgb_max_depth 7 --xgb_lr 0.5 --xgb_reg_lambda 5 --eps_values 1 --ft_epochs 5 --mia_attacks rmia --rmia_n_ref 8
+# python -m eupg run --method dp --dataset credit --model mlp     --forget_ratios 0.05 --n_repeat 5 --max_epochs 50 --batch_size 256 --lr 1e-2 --ft_lr 1e-2 --optimizer adam --scheduler cosine --weight_decay 1e-5 --use_amp true --eps_values 1 --ft_epochs 5 --mia_attacks rmia --rmia_n_ref 8
+# python -m eupg run --method dp --dataset credit --model xgboost --forget_ratios 0.05 --n_repeat 5 --xgb_n_estimators 100 --xgb_max_depth 7 --xgb_lr 0.5 --xgb_reg_lambda 5 --eps_values 1 --ft_epochs 5 --mia_attacks rmia --rmia_n_ref 8
 
 
 # ── CIFAR-10 k-anon (latent) ───────────────────────────────────────────────────
 # ResNet-18 latent features (512-d, ImageNet pretrained) → MDAV clusters (k=10) →
 # pixel-wise column-wise permutation within each cluster.  Always use regenerate mode.
-# python -m mapgu run --method kanon --dataset cifar10 --model resnet18 --forget_ratios 0.05 \
+# python -m eupg run --method kanon --dataset cifar10 --model resnet18 --forget_ratios 0.05 \
   --n_repeat 5 --max_epochs 100 --batch_size 256 --lr 1e-1 --ft_lr 5e-2 --optimizer sgd --scheduler cosine \
   --ft_optimizer sgd --ft_scheduler onecycle --weight_decay 5e-4 --num_workers 4 --pin_memory true \
   --use_amp true --k_values 10 --ft_epochs 5 --kanon_cluster_repr latent --kanon_mode regenerate --mia_attacks rmia --rmia_n_ref 8
 
 
 # ── CIFAR-10 DP ───────────────────────────────────────────────────────────────
-# python -m mapgu run --method dp --dataset cifar10 --model resnet18 --forget_ratios 0.05 --n_repeat 5 \
+# python -m eupg run --method dp --dataset cifar10 --model resnet18 --forget_ratios 0.05 --n_repeat 5 \
   --max_epochs 100 --batch_size 256 --lr 1e-1 --ft_lr 5e-2 --optimizer sgd --scheduler cosine --ft_optimizer sgd \
   --ft_scheduler onecycle --weight_decay 5e-4 --num_workers 4 --pin_memory true --use_amp true --eps_values 1 \
   --ft_epochs 5 --mia_attacks rmia --rmia_n_ref 8
@@ -142,7 +142,7 @@
 #   train_baseline | unlearn_noisy | post_ft
 
 # ── ADULT ─────────────────────────────────────────────────────────────────────
-# python -m mapgu run --method certified_sp --dataset adult --model mlp \
+# python -m eupg run --method certified_sp --dataset adult --model mlp \
   --forget_ratios 0.05 --n_repeat 5 \
   --max_epochs 50 --batch_size 256 \
   --lr 1e-2 --optimizer adam --scheduler cosine --weight_decay 1e-4 \
@@ -158,7 +158,7 @@
   --mia_attacks rmia --rmia_n_ref 8
 
 # ── HEART ─────────────────────────────────────────────────────────────────────
-# python -m mapgu run --method certified_sp --dataset heart --model mlp \
+# python -m eupg run --method certified_sp --dataset heart --model mlp \
   --forget_ratios 0.05 --n_repeat 5 \
   --max_epochs 50 --batch_size 256 \
   --lr 1e-2 --optimizer adam --scheduler cosine --weight_decay 1e-5 \
@@ -174,7 +174,7 @@
   --mia_attacks rmia --rmia_n_ref 8
 
 # ── CREDIT ────────────────────────────────────────────────────────────────────
-# python -m mapgu run --method certified_sp --dataset credit --model mlp \
+# python -m eupg run --method certified_sp --dataset credit --model mlp \
   --forget_ratios 0.05 --n_repeat 5 \
   --max_epochs 50 --batch_size 256 \
   --lr 1e-2 --optimizer adam --scheduler cosine --weight_decay 1e-5 \
@@ -190,7 +190,7 @@
   --mia_attacks rmia --rmia_n_ref 8
 
 # ── CIFAR-10 ──────────────────────────────────────────────────────────────────
-# python -m mapgu run --method certified_sp --dataset cifar10 --model resnet18 \
+# python -m eupg run --method certified_sp --dataset cifar10 --model resnet18 \
   --forget_ratios 0.05 --n_repeat 5 \
   --max_epochs 100 --batch_size 256 \
   --lr 1e-1 --optimizer sgd --scheduler cosine --weight_decay 5e-4 \
@@ -212,13 +212,13 @@
 # Outputs for this step are isolated from the main tables under results/sensitivity_studies/.
 
 # 5a. Heart / XGBoost — impact of k (k-anonymity)
-# python -m mapgu run --method kanon --dataset heart --model xgboost --results_subdir sensitivity_studies/heart_xgboost_k \
+# python -m eupg run --method kanon --dataset heart --model xgboost --results_subdir sensitivity_studies/heart_xgboost_k \
   --forget_ratios 0.05 --n_repeat 5 --xgb_n_estimators 100 --xgb_max_depth 7 --xgb_lr 0.5 --xgb_reg_lambda 5 \
   --k_values 3 5 10 20 30 50 80 100 200 300 500 1000 --ft_epochs 5 --kanon_cluster_repr onehot \
   --kanon_mode regenerate --perm-type colwise --mia_attacks rmia --rmia_n_ref 8
 
 # 5b. CIFAR10 / ResNet18 — impact of k (k-anonymity)
-# python -m mapgu run --method kanon --dataset cifar10 --model resnet18 \
+# python -m eupg run --method kanon --dataset cifar10 --model resnet18 \
   --forget_ratios 0.05 --n_repeat 5 --max_epochs 100 --batch_size 256 \
   --lr 1e-1 --ft_lr 5e-2 --optimizer sgd --scheduler cosine --ft_optimizer sgd \
   --ft_scheduler onecycle --weight_decay 5e-4 --num_workers 4 --pin_memory true \
@@ -226,12 +226,12 @@
   --kanon_mode regenerate --mia_attacks rmia --rmia_n_ref 8 --results_subdir sensitivity_studies/cifar10_resnet18_k2
 
 # 5c. Heart / XGBoost — impact of epsilon (DP)
-# python -m mapgu run --method dp --dataset heart --model xgboost --results_subdir sensitivity_studies/heart_xgboost_epsilon \
+# python -m eupg run --method dp --dataset heart --model xgboost --results_subdir sensitivity_studies/heart_xgboost_epsilon \
     --forget_ratios 0.05 --n_repeat 5 --xgb_n_estimators 100 --xgb_max_depth 7 --xgb_lr 0.5 --xgb_reg_lambda 5 \
     --eps_values 0.25 0.5 1 2 5 10 20 50 100 150 200 300 --ft_epochs 5 --mia_attacks rmia --rmia_n_ref 8
 
 # 5d. CIFAR-10 / ResNet-18 — impact of epsilon and fine-tuning epochs
-# python -m mapgu run --method dp --dataset cifar10 --model resnet18 \
+# python -m eupg run --method dp --dataset cifar10 --model resnet18 \
   --results_subdir sensitivity_studies/cifar10_resnet18_eps_ft_epochs_onecycle_lr5e-2 \
   --forget_ratios 0.05 --n_repeat 5 --max_epochs 100 \
   --batch_size 256 --lr 1e-1 --ft_lr 5e-2 \
@@ -242,7 +242,7 @@
   --mia_attacks rmia --rmia_n_ref 8
 
 # 5e. CIFAR-10 / ResNet-18 — Certified-SP impact of epsilon and fine-tuning epochs
-# python -m mapgu run --method certified_sp --dataset cifar10 --model resnet18 \
+# python -m eupg run --method certified_sp --dataset cifar10 --model resnet18 \
   --results_subdir sensitivity_studies/cifar10_resnet18_certified_sp_post_epochs_onecycle_lr5e-2 \
   --forget_ratios 0.05 --n_repeat 5 \
   --max_epochs 100 --batch_size 256 \
@@ -259,14 +259,14 @@
   --mia_attacks rmia --rmia_n_ref 8
 
 # 5f. Adult / MLP — forget ratio sensitivity
-#     Methods: Retrain (oracle), SISA, MAPGU_k (k=30), MAPGU_ε (ε=1), Certified-SP (ε=1)
+#     Methods: Retrain (oracle), SISA, eupg_k (k=30), eupg_ε (ε=1), Certified-SP (ε=1)
 #     Forget ratios: 1 / 5 / 10 / 25 / 50 / 75 / 90 %
 #     All other hyperparameters identical to canonical Adult-MLP runs (Steps 2–4).
 #     Results isolated under: results/sensitivity_studies/adult_mlp_forget_ratio/
-#     Run order: baseline → sisa → mapgu → certified_sp  (certified_sp depends on baseline init model)
+#     Run order: baseline → sisa → eupg → certified_sp  (certified_sp depends on baseline init model)
 
 # 5f-i. Retrain (oracle baseline)
-# python -m mapgu run --method baseline --dataset adult --model mlp \
+# python -m eupg run --method baseline --dataset adult --model mlp \
   --results_subdir sensitivity_studies/adult_mlp_forget_ratio \
   --forget_ratios 0.01 0.05 0.10 0.25 0.50 0.75 0.9 \
   --n_repeat 5 --max_epochs 50 --batch_size 256 \
@@ -275,7 +275,7 @@
   --mia_attacks rmia --rmia_n_ref 8
 
 # 5f-ii. SISA  (5 shards / 10 slices — same as main)
-# python -m mapgu run --method sisa --dataset adult --model mlp \
+# python -m eupg run --method sisa --dataset adult --model mlp \
   --results_subdir sensitivity_studies/adult_mlp_forget_ratio \
   --forget_ratios 0.01 0.05 0.10 0.25 0.50 0.75 0.9 \
   --n_repeat 5 --max_epochs 50 --batch_size 256 \
@@ -284,9 +284,9 @@
   --num_shards 5 --num_slices 10 \
   --mia_attacks rmia --rmia_n_ref 8
 
-# 5f-iii. MAPGU — Ours (k-anonymity variant, k=30, ft_epochs=5)
+# 5f-iii. eupg — Ours (k-anonymity variant, k=30, ft_epochs=5)
 #          kanon_mode=regenerate: k-anon data is rebuilt per forget ratio automatically.
-# python -m mapgu run --method kanon --dataset adult --model mlp \
+# python -m eupg run --method kanon --dataset adult --model mlp \
   --results_subdir sensitivity_studies/adult_mlp_forget_ratio \
   --forget_ratios 0.01 0.05 0.10 0.25 0.50 0.75 0.9 \
   --n_repeat 5 --max_epochs 50 --batch_size 256 \
@@ -296,8 +296,8 @@
   --kanon_cluster_repr onehot --kanon_mode regenerate --perm-type colwise \
   --mia_attacks rmia --rmia_n_ref 8
 
-# 5f-iv. MAPGU — Ours (DP variant, epsilon=1, ft_epochs=5)
-# python -m mapgu run --method dp --dataset adult --model mlp \
+# 5f-iv. eupg — Ours (DP variant, epsilon=1, ft_epochs=5)
+# python -m eupg run --method dp --dataset adult --model mlp \
   --results_subdir sensitivity_studies/adult_mlp_forget_ratio \
   --forget_ratios 0.01 0.05 0.10 0.25 0.50 0.75 0.9 \
   --n_repeat 5 --max_epochs 50 --batch_size 256 \
@@ -307,7 +307,7 @@
   --mia_attacks rmia --rmia_n_ref 8
 
 # 5f-v. Certified-SP  (epsilon_renyi=1, delta=1e-5 — same as main)
-# python -m mapgu run --method certified_sp --dataset adult --model mlp \
+# python -m eupg run --method certified_sp --dataset adult --model mlp \
   --results_subdir sensitivity_studies/adult_mlp_forget_ratio \
   --forget_ratios 0.01 0.05 0.10 0.25 0.50 0.75 0.9 \
   --n_repeat 5 --max_epochs 50 --batch_size 256 \
@@ -336,8 +336,8 @@
 #                                 all cells show mean±std over 5 runs
 #  6a Head-to-head efficiency   — unlearning wall time (s) for every dataset×model combo,
 #                                 plus average speedup over Retrain
-#  6b Phase-by-phase breakdown  — per-phase runtimes for MAPGU_k, MAPGU_ε, and Certified-SP
-#  7  FT-epoch sensitivity      — test Acc. and MIA AUC for CIFAR-10/ResNet-18 (MAPGU_ε + Certified-SP)
+#  6b Phase-by-phase breakdown  — per-phase runtimes for eupg_k, eupg_ε, and Certified-SP
+#  7  FT-epoch sensitivity      — test Acc. and MIA AUC for CIFAR-10/ResNet-18 (eupg_ε + Certified-SP)
 #                                 at post/ft epochs 3 / 5 / 10 / 20 / 30 / 50
 #  8  Forget ratio sensitivity  — test Acc. and MIA AUC for Adult/MLP at
 #                                 forget ratios 1 / 5 / 10 / 25 / 50 / 75 / 90 %
