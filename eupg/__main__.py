@@ -3,18 +3,18 @@
 MAPGU unified command-line interface.
 
 Usage:
-  python -m mapgu run   --method {baseline,dp,kanon,sisa,certified_sp} --dataset ... --model ... [args]
-  python -m mapgu prepare {dp,kanon,embeddings} [args]
+  python -m eupg run   --method {baseline,dp,kanon,sisa,certified_sp} --dataset ... --model ... [args]
+  python -m eupg prepare {dp,kanon,embeddings} [args]
 
 Examples:
-  python -m mapgu run --method baseline --dataset adult --model mlp --n_repeat 5 --max_epochs 100
-  python -m mapgu run --method dp --dataset adult --model mlp --eps_values 1 --ft_epochs 5
-  python -m mapgu run --method kanon --dataset adult --model mlp --k_values 30 --ft_epochs 5
-  python -m mapgu run --method sisa --dataset adult --model mlp --num_shards 5 --num_slices 10
-  python -m mapgu run --method certified_sp --dataset adult --model mlp --forget_ratios 0.05 --n_repeat 5 --max_epochs 100
-  python -m mapgu prepare embeddings --in-path data/adult/adult.data
-  python -m mapgu prepare kanon --dataset adult --k-values 30 --skip-existing true
-  python -m mapgu prepare dp --dataset adult --eps 1 --skip-existing true
+  python -m eupg run --method baseline --dataset adult --model mlp --n_repeat 5 --max_epochs 100
+  python -m eupg run --method dp --dataset adult --model mlp --eps_values 1 --ft_epochs 5
+  python -m eupg run --method kanon --dataset adult --model mlp --k_values 30 --ft_epochs 5
+  python -m eupg run --method sisa --dataset adult --model mlp --num_shards 5 --num_slices 10
+  python -m eupg run --method certified_sp --dataset adult --model mlp --forget_ratios 0.05 --n_repeat 5 --max_epochs 100
+  python -m eupg prepare embeddings --in-path data/adult/adult.data
+  python -m eupg prepare kanon --dataset adult --k-values 30 --skip-existing true
+  python -m eupg prepare dp --dataset adult --eps 1 --skip-existing true
 """
 
 from __future__ import annotations
@@ -41,7 +41,7 @@ def _str_to_bool(v: str) -> bool:
 
 def build_parser() -> argparse.ArgumentParser:
     p = argparse.ArgumentParser(
-        prog="mapgu",
+        prog="eupg",
         description="MAPGU: Efficient Unlearning with Privacy Guarantees — unified runner",
     )
     sub = p.add_subparsers(dest="command", required=True)
@@ -302,7 +302,7 @@ def build_parser() -> argparse.ArgumentParser:
 # ---------------------------------------------------------------------------
 
 def _run_baseline(args: argparse.Namespace) -> None:
-    from mapgu.experiments.base import PrivacyBenchmark
+    from eupg.experiments.base import PrivacyBenchmark
 
     max_epochs = args.max_epochs if args.max_epochs is not None else 10
 
@@ -344,7 +344,7 @@ def _run_baseline(args: argparse.Namespace) -> None:
 
 
 def _run_privacy(args: argparse.Namespace, method: str) -> None:
-    from mapgu.experiments.dp import PrivacyExperiments
+    from eupg.experiments.dp import PrivacyExperiments
 
     max_epochs = args.max_epochs if args.max_epochs is not None else 100
     ft_epochs = list(map(int, args.ft_epochs)) if args.ft_epochs is not None else [5]
@@ -406,7 +406,7 @@ def _run_privacy(args: argparse.Namespace, method: str) -> None:
 
 
 def _run_sisa(args: argparse.Namespace) -> None:
-    from mapgu.experiments.sisa import SISAExperiments, _paper_defaults
+    from eupg.experiments.sisa import SISAExperiments, _paper_defaults
 
     dflt = _paper_defaults(args.dataset, args.model)
     max_epochs = int(args.max_epochs) if args.max_epochs is not None else int(dflt.epochs)
@@ -459,7 +459,7 @@ def _run_sisa(args: argparse.Namespace) -> None:
 
 
 def _run_certified_sp(args: argparse.Namespace) -> None:
-    from mapgu.experiments.certified_sp import CERTIFIED_SPRunner
+    from eupg.experiments.certified_sp import CERTIFIED_SPRunner
 
     post_lr_schedule = "constant" if args.post_lr_schedule == "none" else str(args.post_lr_schedule)
     post_unlearn_clip = (

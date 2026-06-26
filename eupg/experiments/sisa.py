@@ -13,11 +13,11 @@ import torch
 from sklearn.metrics import accuracy_score, roc_auc_score
 from torch.utils.data import ConcatDataset, DataLoader, Subset
 
-from mapgu.evaluation.attacks import tf_attack, lira_scaled_logit_score, _safe_auc_and_adv, _tpr_at_fpr, rmia_attack as _rmia_attack
-from mapgu.experiments.base import PrivacyBenchmark
-from mapgu.models.factory import seed_everything
-from mapgu.training.trainer import train_model
-from mapgu.utils import (
+from eupg.evaluation.attacks import tf_attack, lira_scaled_logit_score, _safe_auc_and_adv, _tpr_at_fpr, rmia_attack as _rmia_attack
+from eupg.experiments.base import PrivacyBenchmark
+from eupg.models.factory import seed_everything
+from eupg.training.trainer import train_model
+from eupg.utils import (
     log_metrics_table,
     save_metrics_csv,
     save_summary_csv,
@@ -25,7 +25,7 @@ from mapgu.utils import (
     get_logger,
     append_runtime_rows,
 )
-from mapgu.evaluation.metrics import (
+from eupg.evaluation.metrics import (
     accuracy_with_majority_voting,
     auc_score_with_majority_voting,
     compute_attack_components_sisa1,

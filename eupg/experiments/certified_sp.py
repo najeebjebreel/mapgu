@@ -14,12 +14,12 @@ import torch.optim as optim
 from torch.utils.data import DataLoader
 from tqdm import tqdm
 
-from mapgu.experiments.base import PrivacyBenchmark
-from mapgu.models.factory import seed_everything
-from mapgu.experiments.dp import PrivacyExperiments
-from mapgu.utils import get_logger, save_metrics_csv, save_summary_csv, save_config_yaml, log_metrics_table, _ms, _fmt_eps, _ensure_dir, append_runtime_rows
-from mapgu.training.trainer import train_model
-from mapgu.training.certified_sp_trainer import (
+from eupg.experiments.base import PrivacyBenchmark
+from eupg.models.factory import seed_everything
+from eupg.experiments.dp import PrivacyExperiments
+from eupg.utils import get_logger, save_metrics_csv, save_summary_csv, save_config_yaml, log_metrics_table, _ms, _fmt_eps, _ensure_dir, append_runtime_rows
+from eupg.training.trainer import train_model
+from eupg.training.certified_sp_trainer import (
     train_model_certified_sp_unlearn,
     train_model_certified_sp_post_finetune,
     certified_sp_steps,
@@ -215,12 +215,12 @@ class CERTIFIED_SPRunner(PrivacyBenchmark):
 
     def _metric_retain_forget_test(self, model: nn.Module, retain_loader: DataLoader, forget_loader: DataLoader) -> Tuple[float, float, float]:
         if self.dataset == "credit":
-            from mapgu.evaluation.metrics import auc_score
+            from eupg.evaluation.metrics import auc_score
             r = float(auc_score(model, retain_loader, device=self.device))
             f = float(auc_score(model, forget_loader, device=self.device))
             t = float(auc_score(model, self._torch_test_loader(), device=self.device))
         else:
-            from mapgu.evaluation.metrics import accuracy
+            from eupg.evaluation.metrics import accuracy
             r = float(accuracy(model, retain_loader, device=self.device))
             f = float(accuracy(model, forget_loader, device=self.device))
             t = float(accuracy(model, self._torch_test_loader(), device=self.device))

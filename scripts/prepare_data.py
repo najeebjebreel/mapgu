@@ -2,7 +2,7 @@
 """
 Prepare privacy-protected datasets OFFLINE (one-time) for MAPGU.
 
-Replaces scripts/prepare_private_data.py with mapgu-package imports.
+Replaces scripts/prepare_private_data.py with eupg-package imports.
 
 Usage (as module):
   python -m scripts.prepare_data kanon --dataset adult --k-values 30 --skip-existing
@@ -20,12 +20,12 @@ from typing import Optional, Dict, Any, List, Tuple
 
 import numpy as np
 
-from mapgu.utils import get_logger
-from mapgu.config import DATA_DIR, DP_DIR, KANON_DIR, ADULT_EMB_RT_CSV
+from eupg.utils import get_logger
+from eupg.config import DATA_DIR, DP_DIR, KANON_DIR, ADULT_EMB_RT_CSV
 
-from mapgu.data.loaders import DatasetLoader
-from mapgu.models import build_cluster_repr_onehot, build_cluster_repr_tabnet
-from mapgu.data.privacy.kanon import mdav_clusters, probabilistic_k_anonymize_by_permutation
+from eupg.data.loaders import DatasetLoader
+from eupg.models import build_cluster_repr_onehot, build_cluster_repr_tabnet
+from eupg.data.privacy.kanon import mdav_clusters, probabilistic_k_anonymize_by_permutation
 
 logger = get_logger(__name__)
 
@@ -159,8 +159,8 @@ def prepare_kanon(
     elif dataset == "cifar10":
         import torch
         from torchvision.datasets import CIFAR10
-        from mapgu.data.privacy.cifar_kanon import build_cifar_kanon_data
-        from mapgu.config import CIFAR_MEAN, CIFAR_STD
+        from eupg.data.privacy.cifar_kanon import build_cifar_kanon_data
+        from eupg.config import CIFAR_MEAN, CIFAR_STD
 
         _root = cifar_root if cifar_root is not None else DATA_DIR
         cifar_train = CIFAR10(root=_root, train=True, download=True)
@@ -375,7 +375,7 @@ def prepare_dp(
         eps_str = _fmt_eps(eps)
 
         if dataset == "adult":
-            from mapgu.data.privacy.dp import generate_dp_adult
+            from eupg.data.privacy.dp import generate_dp_adult
 
             out_dir = os.path.join(DP_DIR, "adult", f"eps={eps_str}")
             out_csv = os.path.join(out_dir, "dp_adult.csv")
@@ -424,7 +424,7 @@ def prepare_dp(
                         out_csv, os.path.join(out_dir, "runtimes.csv"))
 
         elif dataset == "credit":
-            from mapgu.data.privacy.dp import generate_dp_laplace_only
+            from eupg.data.privacy.dp import generate_dp_laplace_only
 
             out_dir = os.path.join(DP_DIR, "credit", f"eps={eps_str}")
             out_csv = os.path.join(out_dir, "dp_credit.csv")
@@ -468,7 +468,7 @@ def prepare_dp(
                         eps_str, anon_time, total_time, out_csv, os.path.join(out_dir, "runtimes.csv"))
 
         elif dataset == "heart":
-            from mapgu.data.privacy.dp import generate_dp_laplace_only
+            from eupg.data.privacy.dp import generate_dp_laplace_only
 
             out_dir = os.path.join(DP_DIR, "heart", f"eps={eps_str}")
             out_csv = os.path.join(out_dir, "dp_heart.csv")
@@ -512,7 +512,7 @@ def prepare_dp(
                         eps_str, anon_time, total_time, out_csv, os.path.join(out_dir, "runtimes.csv"))
 
         elif dataset == "cifar10":
-            from mapgu.data.privacy.dp import generate_dp_cifar10_dppix
+            from eupg.data.privacy.dp import generate_dp_cifar10_dppix
 
             out_base = os.path.join(DP_DIR, "cifar10")
             eps_dir = os.path.join(out_base, f"eps={eps_str}")

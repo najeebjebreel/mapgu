@@ -21,18 +21,18 @@ from torch.utils.data import DataLoader, Subset, TensorDataset
 from tqdm import tqdm
 from torchvision import transforms
 
-from mapgu.config import DATA_DIR, DP_DIR, KANON_DIR, CIFAR_MEAN, CIFAR_STD, ADULT_EMB_RT_CSV
-from mapgu.experiments.base import PrivacyBenchmark, build_cluster_repr_onehot, build_cluster_repr_tabnet
-from mapgu.models.factory import seed_everything
-from mapgu.evaluation.attacks import tf_attack
-from mapgu.data.privacy.kanon import mdav_clusters, probabilistic_k_anonymize_by_permutation
-from mapgu.evaluation.metrics import accuracy, auc_score, compute_attack_components
-from mapgu.training.trainer import train_model
-from mapgu.utils import get_logger, save_metrics_csv, save_summary_csv, save_config_yaml, log_metrics_table, _ms, _fmt_eps, _ensure_dir, append_runtime_rows
+from eupg.config import DATA_DIR, DP_DIR, KANON_DIR, CIFAR_MEAN, CIFAR_STD, ADULT_EMB_RT_CSV
+from eupg.experiments.base import PrivacyBenchmark, build_cluster_repr_onehot, build_cluster_repr_tabnet
+from eupg.models.factory import seed_everything
+from eupg.evaluation.attacks import tf_attack
+from eupg.data.privacy.kanon import mdav_clusters, probabilistic_k_anonymize_by_permutation
+from eupg.evaluation.metrics import accuracy, auc_score, compute_attack_components
+from eupg.training.trainer import train_model
+from eupg.utils import get_logger, save_metrics_csv, save_summary_csv, save_config_yaml, log_metrics_table, _ms, _fmt_eps, _ensure_dir, append_runtime_rows
 
-_LOGGER_PRIVACY = get_logger("mapgu.experiments.privacy")
-_LOGGER_DP = get_logger("mapgu.experiments.dp")
-_LOGGER_KANON = get_logger("mapgu.experiments.kanon")
+_LOGGER_PRIVACY = get_logger("eupg.experiments.privacy")
+_LOGGER_DP = get_logger("eupg.experiments.dp")
+_LOGGER_KANON = get_logger("eupg.experiments.kanon")
 logger = _LOGGER_PRIVACY
 
 
@@ -356,7 +356,7 @@ class PrivacyExperiments(PrivacyBenchmark):
 
         if not self.is_tabular:
             # CIFAR-10 path: cluster in ResNet-18 latent space, permute pixels
-            from mapgu.data.privacy.cifar_kanon import build_cifar_kanon_data
+            from eupg.data.privacy.cifar_kanon import build_cifar_kanon_data
             # trainset.data is (N, H, W, C) uint8
             raw = np.asarray(self.trainset.data, dtype=np.float32) / 255.0  # (N, H, W, C)
             raw = raw.transpose(0, 3, 1, 2)                                  # (N, C, H, W)
@@ -603,7 +603,7 @@ class PrivacyExperiments(PrivacyBenchmark):
         rmia_probs_full: (probs_tgt_m, probs_ref_m, probs_tgt_nm_full, probs_ref_nm_full)
         where *_full arrays cover the entire test set and are subsampled here by rand_idxs.
         """
-        from mapgu.evaluation.attacks import lira_scaled_logit_score, _safe_auc_and_adv, _tpr_at_fpr, rmia_attack as _rmia_attack
+        from eupg.evaluation.attacks import lira_scaled_logit_score, _safe_auc_and_adv, _tpr_at_fpr, rmia_attack as _rmia_attack
         results: Dict[str, Tuple[float, float]] = {}
         mia_attacks = list(getattr(self, 'mia_attacks', ['loss']))
 
@@ -690,7 +690,7 @@ class PrivacyExperiments(PrivacyBenchmark):
             # Precompute RMIA reference probs once (reused across R resamples)
             rmia_probs_full = None
             if 'rmia' in mia_attacks and retain_loader is not None and forget_ratio is not None:
-                from mapgu.evaluation.attacks import _to_probs
+                from eupg.evaluation.attacks import _to_probs
                 ref_models = self._get_reference_models(retain_loader, forget_ratio, run_id)
                 probs_tgt_m      = _to_probs(logits_mem)[np.arange(m_eff), labels_mem]
                 probs_tgt_nm_full = _to_probs(logits_test)[np.arange(n_test), labels_test]
@@ -750,7 +750,7 @@ class PrivacyExperiments(PrivacyBenchmark):
         # Precompute RMIA reference probs once for XGBoost
         xgb_rmia_probs_full = None
         if 'rmia' in mia_attacks and X_retain is not None and y_retain is not None and forget_ratio is not None:
-            from mapgu.evaluation.attacks import rmia_attack as _rmia_attack
+            from eupg.evaluation.attacks import rmia_attack as _rmia_attack
             ref_models = self._get_reference_models_predict_proba(X_retain, y_retain, forget_ratio, run_id)
             probs_tgt_m       = forget_preds[np.arange(m_eff), y_forget]
             probs_tgt_nm_full = test_preds[np.arange(n_test), y_test]

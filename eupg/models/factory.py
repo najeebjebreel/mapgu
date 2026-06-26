@@ -15,9 +15,9 @@ import timm
 from sklearn.preprocessing import StandardScaler
 from xgboost import XGBClassifier
 
-from mapgu.config import ADULT_CAT_COLS, ADULT_NUM_COLS
-from mapgu.models.architectures import MLPModel
-from mapgu.utils import get_logger
+from eupg.config import ADULT_CAT_COLS, ADULT_NUM_COLS
+from eupg.models.architectures import MLPModel
+from eupg.utils import get_logger
 
 logger = get_logger(__name__)
 

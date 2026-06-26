@@ -12,8 +12,8 @@ from sklearn.compose import ColumnTransformer
 from torchvision import datasets as tv_datasets
 from torchvision import transforms
 
-from mapgu.config import DATA_DIR, ADULT_NUM_COLS, ADULT_CAT_COLS, CIFAR_MEAN, CIFAR_STD
-from mapgu.data.preprocessors import ColumnsSelector, CategoricalImputer, CategoricalEncoder
+from eupg.config import DATA_DIR, ADULT_NUM_COLS, ADULT_CAT_COLS, CIFAR_MEAN, CIFAR_STD
+from eupg.data.preprocessors import ColumnsSelector, CategoricalImputer, CategoricalEncoder
 
 
 def _adult_income_to_int(x: object) -> int:

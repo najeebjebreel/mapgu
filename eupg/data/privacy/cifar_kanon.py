@@ -9,8 +9,8 @@ import numpy as np
 import torch
 from torch.utils.data import DataLoader, TensorDataset
 
-from mapgu.config import CIFAR_MEAN, CIFAR_STD
-from mapgu.utils import get_logger
+from eupg.config import CIFAR_MEAN, CIFAR_STD
+from eupg.utils import get_logger
 
 logger = get_logger(__name__)
 
@@ -134,7 +134,7 @@ def build_cifar_kanon_data(
         feat_summary: log string describing feature statistics.
         anon_summary: log string describing cluster statistics.
     """
-    from mapgu.data.privacy.kanon import mdav_clusters
+    from eupg.data.privacy.kanon import mdav_clusters
 
     logger.info(f"[cifar_kanon] Extracting ResNet-18 features for {len(images_norm)} images ...")
     feats = extract_features(images_norm, device=device, batch_size=batch_size)

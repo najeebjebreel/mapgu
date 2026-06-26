@@ -14,9 +14,9 @@ from tqdm import tqdm
 
 from diffprivlib.mechanisms import Laplace, ExponentialCategorical
 
-from mapgu.utils import get_logger
-from mapgu.config import ADULT_COLUMNS, ADULT_NUM_COLS as ADULT_NUMERIC, ADULT_LABEL
-from mapgu.data.privacy.dp_pix import dp_pix
+from eupg.utils import get_logger
+from eupg.config import ADULT_COLUMNS, ADULT_NUM_COLS as ADULT_NUMERIC, ADULT_LABEL
+from eupg.data.privacy.dp_pix import dp_pix
 
 logger = get_logger(__name__)
 

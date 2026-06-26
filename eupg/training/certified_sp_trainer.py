@@ -13,7 +13,7 @@ from torch.nn.utils import clip_grad_norm_
 from torch.utils.data import DataLoader
 from tqdm import tqdm
 
-from mapgu.training.trainer import global_param_l2_norm as _global_param_l2_norm
+from eupg.training.trainer import global_param_l2_norm as _global_param_l2_norm
 
 
 # -------------------------

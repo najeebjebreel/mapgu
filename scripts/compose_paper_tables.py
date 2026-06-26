@@ -1117,7 +1117,7 @@ def build_table_forget_ratio(
 
 def build_table_ft_epochs(
     results_dir: str,
-    mapgu_subdir: str = FT_EPOCHS_MAPGU_SUBDIR,
+    eupg_subdir: str = FT_EPOCHS_MAPGU_SUBDIR,
     certsp_subdir: str = FT_EPOCHS_CERTSP_SUBDIR,
     ft_values: Optional[List[int]] = None,
     eps: float = DP_EPS,
@@ -1131,7 +1131,7 @@ def build_table_ft_epochs(
     eps_disp = int(eps) if eps == int(eps) else eps
     fr_s     = _fmt_fr(fr)
 
-    mapgu_dir  = os.path.join(results_dir, mapgu_subdir,  "cifar10")
+    eupg_dir  = os.path.join(results_dir, eupg_subdir,  "cifar10")
     certsp_dir = os.path.join(results_dir, certsp_subdir, "cifar10")
 
     epoch_labels = [str(n) for n in ft_values]
@@ -1152,7 +1152,7 @@ def build_table_ft_epochs(
     cells: List[str] = [rf"MAPGU$_\varepsilon$ ($\varepsilon$={eps_disp})"]
     for n in ft_values:
         fname   = f"resnet18_mdpret_eps={eps_s}_fr={fr_s}_epochs={n}.csv"
-        metrics = load_metrics(os.path.join(mapgu_dir, fname))
+        metrics = load_metrics(os.path.join(eupg_dir, fname))
         acc_v, acc_s = metrics.get("Test Accuracy", (math.nan, math.nan))
         auc_v, auc_s = mia_auc(metrics)
         cells.append(_val(acc_v, acc_s))

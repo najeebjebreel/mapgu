@@ -7,7 +7,7 @@ from typing import List, Tuple, Optional
 import numpy as np
 from tqdm import tqdm
 
-from mapgu.utils import get_logger
+from eupg.utils import get_logger
 
 logger = get_logger(__name__)
 

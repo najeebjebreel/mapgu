@@ -15,13 +15,13 @@ from sklearn.metrics import accuracy_score, roc_auc_score
 from sklearn.preprocessing import OneHotEncoder
 from torch.utils.data import DataLoader, Subset, TensorDataset
 
-from mapgu.config import DATA_DIR, DEFAULT_SEED, MIA_RESAMPLES, MIA_EVAL_CAP, RESULTS_DIR
-from mapgu.data.loaders import DatasetLoader
-from mapgu.models.factory import ModelFactory, seed_everything, get_model
-from mapgu.training.trainer import train_model
-from mapgu.evaluation.metrics import accuracy as _accuracy, auc_score as _auc_score, compute_attack_components
-from mapgu.evaluation.attacks import mia_attack, tf_attack, rmia_attack, lira_scaled_logit_score
-from mapgu.utils import get_logger, save_metrics_csv, save_summary_csv, save_config_yaml, log_metrics_table, _ms, append_runtime_rows
+from eupg.config import DATA_DIR, DEFAULT_SEED, MIA_RESAMPLES, MIA_EVAL_CAP, RESULTS_DIR
+from eupg.data.loaders import DatasetLoader
+from eupg.models.factory import ModelFactory, seed_everything, get_model
+from eupg.training.trainer import train_model
+from eupg.evaluation.metrics import accuracy as _accuracy, auc_score as _auc_score, compute_attack_components
+from eupg.evaluation.attacks import mia_attack, tf_attack, rmia_attack, lira_scaled_logit_score
+from eupg.utils import get_logger, save_metrics_csv, save_summary_csv, save_config_yaml, log_metrics_table, _ms, append_runtime_rows
 
 logger = get_logger(__name__)
 
@@ -722,7 +722,7 @@ class PrivacyBenchmark:
                     logger.warning("RMIA requested for a predict_proba model but X_retain/y_retain not provided; skipping.")
                     results['rmia'] = (0.5, 0.01)
                 else:
-                    from mapgu.evaluation.attacks import rmia_attack as _rmia_attack
+                    from eupg.evaluation.attacks import rmia_attack as _rmia_attack
                     ref_models = self._get_reference_models_predict_proba(X_retain, y_retain, forget_ratio, run_id)
 
                     y_test_eff  = np.asarray(self.y_test)[rand_idxs]
@@ -797,7 +797,7 @@ class PrivacyBenchmark:
 
         # ── scaled_logit (LiRA single-model) ────────────────────────────────────
         if 'scaled_logit' in self.mia_attacks:
-            from mapgu.evaluation.attacks import lira_scaled_logit_score, _safe_auc_and_adv, _tpr_at_fpr
+            from eupg.evaluation.attacks import lira_scaled_logit_score, _safe_auc_and_adv, _tpr_at_fpr
             scores_m  = lira_scaled_logit_score(logits_forget, forget_labels)
             scores_nm = lira_scaled_logit_score(logits_test,   test_labels)
             y_true  = np.concatenate([np.ones(m_eff, dtype=int), np.zeros(m_eff, dtype=int)])
@@ -812,7 +812,7 @@ class PrivacyBenchmark:
                 logger.warning("RMIA requested but retain_loader/forget_ratio not provided — skipping.")
                 results['rmia'] = (0.5, 0.01)
             else:
-                from mapgu.evaluation.attacks import rmia_attack as _rmia_attack, _to_probs
+                from eupg.evaluation.attacks import rmia_attack as _rmia_attack, _to_probs
 
                 ref_models = self._get_reference_models(retain_loader, forget_ratio, run_id)
 

@@ -15,7 +15,7 @@ from sklearn.neural_network import MLPClassifier
 from sklearn.model_selection import StratifiedKFold
 from sklearn.preprocessing import StandardScaler
 
-from mapgu.utils import get_logger
+from eupg.utils import get_logger
 
 logger = get_logger(__name__)
 

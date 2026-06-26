@@ -2,7 +2,7 @@
 """
 Build TabNet-based category embeddings and utilities for Adult dataset.
 
-Replaces scripts/build_adult_embeddings.py with mapgu-package imports.
+Replaces scripts/build_adult_embeddings.py with eupg-package imports.
 
 Always writes a simple runtime CSV inside the dataset folder (overwritten each run):
   data/adult/embeddings_runtimes.csv
@@ -44,7 +44,7 @@ import pandas as pd
 import torch
 from pytorch_tabnet.pretraining import TabNetPretrainer
 
-from mapgu.utils import get_logger
+from eupg.utils import get_logger
 
 logger = get_logger(__name__)
 

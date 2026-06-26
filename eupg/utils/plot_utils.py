@@ -1,11 +1,11 @@
 ﻿"""
-mapgu.utils.plot_utils
+eupg.utils.plot_utils
 =====================
 Reusable plotting helpers for hyperparameter-sweep figures.
 
 Typical usage from a notebook
 ------------------------------
-    from mapgu.utils.plot_utils import (
+    from eupg.utils.plot_utils import (
         apply_style, plot_sweep, plot_multi_sweep, plot_tradeoff,
     )
 
