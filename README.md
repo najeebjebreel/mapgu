@@ -1,6 +1,6 @@
-# MAPGU: Model-Agnostic Privacy-Guaranteed Unlearning
+# EUPG: Efficient Unlearning with Privacy Guarantees
 
-Artifact for the paper **"MAPGU: Model-Agnostic Privacy-Guaranteed Unlearning via Training Data Pre-Protection"**.
+Artifact for the paper **"EUPG: Efficient Unlearning with Privacy Guarantees"**.
 
 This repository contains all code and scripts needed to reproduce tables and
 figures reported in the paper. Datasets must be downloaded separately (see §4).
@@ -23,9 +23,9 @@ figures reported in the paper. Datasets must be downloaded separately (see §4).
 
 ## 1. Artifact Overview
 
-**MAPGU** is a machine-unlearning framework that lets a model forget specific
+**EUPG** is a machine-unlearning framework that lets a model forget specific
 training samples with formal privacy guarantees. Unlike certified methods that
-impose restrictions on model architecture or loss function, MAPGU is
+impose restrictions on model architecture or loss function, EUPG is
 *model-agnostic*: it pre-trains on privacy-protected data (k-anonymous or
 differentially private) and unlearns by fine-tuning on the remaining retain
 set D_r.
@@ -36,8 +36,8 @@ The paper compares five methods across four datasets and three model families:
 |---|---|
 | **Retrain** (oracle) | Full retrain on the retain set D_r — exact gold standard |
 | **SISA** | Sharded, sliced training with partial shard retraining |
-| **MAPGU_k** (ours) | Trains on k-anonymous data; unlearns via fine-tune on D_r |
-| **MAPGU_ε** (ours) | Trains on ε-DP synthetic data; unlearns via fine-tune on D_r |
+| **EUPG_k** (ours) | Trains on k-anonymous data; unlearns via fine-tune on D_r |
+| **EUPG_ε** (ours) | Trains on ε-DP synthetic data; unlearns via fine-tune on D_r |
 | **Certified-SP** | Certified baseline: noisy gradient descent + post fine-tune |
 
 Evaluation metrics: utility (test accuracy or AUC), MIA-AUC and TPR@1%FPR
@@ -48,8 +48,8 @@ from the RMIA offline membership-inference attack, and wall-clock runtimes.
 ## 2. Repository Layout
 
 ```
-mapgu-reprod/
-├── mapgu/                        # Main Python package
+EUPG-reprod/
+├── EUPG/                        # Main Python package
 │   ├── __main__.py               # Unified CLI entry point
 │   ├── config.py                 # Paths and global constants
 │   ├── data/                     # Dataset loaders and privacy transforms
@@ -63,8 +63,8 @@ mapgu-reprod/
 │   ├── experiments/              # Experiment runners (one per method)
 │   │   ├── base.py               # Baseline / Retrain
 │   │   ├── sisa.py               # SISA
-│   │   ├── dp.py                 # MAPGU_ε (DP)
-│   │   ├── kanon.py              # MAPGU_k (k-anonymity)
+│   │   ├── dp.py                 # eupg_ε (DP)
+│   │   ├── kanon.py              # eupg_k (k-anonymity)
 │   │   └── certified_sp.py       # Certified-SP
 │   ├── models/                   # MLP, XGBoost, ResNet-18, DenseNet factories
 │   ├── training/                 # Generic trainer + Certified-SP trainer
@@ -108,7 +108,7 @@ mapgu-reprod/
 
 ```bash
 conda env create -f environment.yml
-conda activate mapgu
+conda activate eupg
 ```
 
 This installs Python 3.8, PyTorch 1.12+cu116, TensorFlow 2.13,
@@ -118,10 +118,10 @@ dependencies automatically.
 ### Verify installation
 
 ```bash
-python -m mapgu --help
+python -m eupg --help
 ```
 
-You should see the `mapgu run` / `mapgu prepare` subcommands listed.
+You should see the `eupg run` / `eupg prepare` subcommands listed.
 
 ---
 
@@ -138,7 +138,7 @@ Place each file at the path shown before running any experiments.
 | CIFAR-10 | Auto-downloaded on first run (see below) | `data/cifar-10-batches-py/` |
 
 **CIFAR-10** is fetched automatically by PyTorch the first time you run a
-CIFAR-10 experiment. Add `--cifar_download true` to any `mapgu run` command
+CIFAR-10 experiment. Add `--cifar_download true` to any `eupg run` command
 that targets `--dataset cifar10`, or download and extract the archive manually
 from the [CIFAR-10 page](https://www.cs.toronto.edu/~kriz/cifar.html) to
 `data/cifar-10-batches-py/`.
@@ -149,25 +149,25 @@ from the [CIFAR-10 page](https://www.cs.toronto.edu/~kriz/cifar.html) to
 `--kanon_mode regenerate` is set (default in `cli_commands.txt`). Pre-generated
 data for some configurations is already present under `data/k_anon_data/`.
 
-**DP synthetic data** — must be generated before running MAPGU_ε experiments.
+**DP synthetic data** — must be generated before running EUPG_ε experiments.
 Either download the pre-generated `dp_data/` folder from Google Drive (see
 original README link) or generate it yourself:
 
 ```bash
 # Step 1a — Adult TabNet embeddings (required for Adult DP; ~5 min)
-python -m mapgu prepare embeddings --in-path data/adult/adult.data
+python -m eupg prepare embeddings --in-path data/adult/adult.data
 
 # Step 1b — k-anonymous data (optional; experiments regenerate automatically)
-python -m mapgu prepare kanon --dataset adult  --k-values 30 --skip-existing false
-python -m mapgu prepare kanon --dataset heart  --k-values 30 --skip-existing false
-python -m mapgu prepare kanon --dataset credit --k-values 30 --skip-existing false
-python -m mapgu prepare kanon --dataset cifar10 --k-values 30 --skip-existing false
+python -m eupg prepare kanon --dataset adult  --k-values 30 --skip-existing false
+python -m eupg prepare kanon --dataset heart  --k-values 30 --skip-existing false
+python -m eupg prepare kanon --dataset credit --k-values 30 --skip-existing false
+python -m eupg prepare kanon --dataset cifar10 --k-values 30 --skip-existing false
 
-# Step 1c — DP synthetic data (required for MAPGU_ε experiments)
-python -m mapgu prepare dp --dataset adult  --eps 1 --skip-existing false
-python -m mapgu prepare dp --dataset heart  --eps 1 --skip-existing false
-python -m mapgu prepare dp --dataset credit --eps 1 --skip-existing false
-python -m mapgu prepare dp --dataset cifar10 --eps 1 --skip-existing false
+# Step 1c — DP synthetic data (required for eupg_ε experiments)
+python -m eupg prepare dp --dataset adult  --eps 1 --skip-existing false
+python -m eupg prepare dp --dataset heart  --eps 1 --skip-existing false
+python -m eupg prepare dp --dataset credit --eps 1 --skip-existing false
+python -m eupg prepare dp --dataset cifar10 --eps 1 --skip-existing false
 ```
 
 DP data is saved to `data/dp_data/<dataset>/eps=<eps>/`.
@@ -183,37 +183,37 @@ Run one complete experiment cycle on Heart / XGBoost — a fast tabular
 benchmark that exercises all five methods.
 
 ```bash
-conda activate mapgu
+conda activate eupg
 
 # Step 1: Generate DP data for Heart (one-time)
-python -m mapgu prepare dp --dataset heart --eps 1 --skip-existing false
+python -m eupg prepare dp --dataset heart --eps 1 --skip-existing false
 
 # Step 2: Baseline (Retrain oracle + SISA)
-python -m mapgu run --method baseline --dataset heart --model xgboost \
+python -m eupg run --method baseline --dataset heart --model xgboost \
   --forget_ratios 0.05 --n_repeat 3 \
   --xgb_n_estimators 100 --xgb_max_depth 7 --xgb_lr 0.5 --xgb_reg_lambda 5 \
   --mia_attacks rmia --rmia_n_ref 1
 
-python -m mapgu run --method sisa --dataset heart --model xgboost \
+python -m eupg run --method sisa --dataset heart --model xgboost \
   --forget_ratios 0.05 --n_repeat 3 \
   --xgb_n_estimators 100 --xgb_max_depth 7 --xgb_lr 0.5 --xgb_reg_lambda 5 \
   --num_shards 5 --num_slices 10 --mia_attacks rmia --rmia_n_ref 1
 
-# Step 3: MAPGU_k (k-anonymity)
-python -m mapgu run --method kanon --dataset heart --model xgboost \
+# Step 3: eupg_k (k-anonymity)
+python -m eupg run --method kanon --dataset heart --model xgboost \
   --forget_ratios 0.05 --n_repeat 3 \
   --xgb_n_estimators 100 --xgb_max_depth 7 --xgb_lr 0.5 --xgb_reg_lambda 5 \
   --k_values 30 --ft_epochs 5 --kanon_mode regenerate --perm-type colwise \
   --mia_attacks rmia --rmia_n_ref 1
 
-# Step 4: MAPGU_ε (DP)
-python -m mapgu run --method dp --dataset heart --model xgboost \
+# Step 4: eupg_ε (DP)
+python -m eupg run --method dp --dataset heart --model xgboost \
   --forget_ratios 0.05 --n_repeat 3 \
   --xgb_n_estimators 100 --xgb_max_depth 7 --xgb_lr 0.5 --xgb_reg_lambda 5 \
   --eps_values 1 --ft_epochs 5 --mia_attacks rmia --rmia_n_ref 1
 
 # Step 5: Certified-SP (MLP only — not supported for XGBoost)
-python -m mapgu run --method certified_sp --dataset heart --model mlp \
+python -m eupg run --method certified_sp --dataset heart --model mlp \
   --forget_ratios 0.05 --n_repeat 3 \
   --max_epochs 50 --batch_size 256 \
   --lr 1e-2 --optimizer adam --scheduler cosine --weight_decay 1e-5 \
@@ -236,7 +236,7 @@ Each method writes its metrics to `results/heart/xgboost_*.csv`. The final
 command prints LaTeX for Table 4 (Quality table) to stdout and saves `.tex`
 files under `results/paper_tables/`.
 
-**What to expect:** MAPGU_k and MAPGU_ε should achieve utility (Acc) within
+**What to expect:** eupg_k and eupg_ε should achieve utility (Acc) within
 1–3% of the Retrain oracle, while MIA-AUC after unlearning should fall close
 to the 50% random-guess level — confirming successful forgetting.
 
@@ -276,14 +276,14 @@ python scripts/run_cli_commands.py --continue-on-error
 **Step 1 — One-time data preparation** (once only; re-add `--skip-existing true` afterwards)
 
 ```bash
-python -m mapgu prepare embeddings --in-path data/adult/adult.data
-python -m mapgu prepare kanon --dataset adult  --k-values 3 5 10 20 30 50 80 100 200 300 500 1000
-python -m mapgu prepare kanon --dataset heart  --k-values 3 5 10 20 30 50 80 100 200 300 500 1000
-python -m mapgu prepare kanon --dataset credit --k-values 30
-python -m mapgu prepare dp --dataset adult  --eps 0.25 0.5 1 2 5 10 20 50 100 150 200 300
-python -m mapgu prepare dp --dataset heart  --eps 0.25 0.5 1 2 5 10 20 50 100 150 200 300
-python -m mapgu prepare dp --dataset credit --eps 1
-python -m mapgu prepare dp --dataset cifar10 --eps 0.25 0.5 1 5 10 100
+python -m eupg prepare embeddings --in-path data/adult/adult.data
+python -m eupg prepare kanon --dataset adult  --k-values 3 5 10 20 30 50 80 100 200 300 500 1000
+python -m eupg prepare kanon --dataset heart  --k-values 3 5 10 20 30 50 80 100 200 300 500 1000
+python -m eupg prepare kanon --dataset credit --k-values 30
+python -m eupg prepare dp --dataset adult  --eps 0.25 0.5 1 2 5 10 20 50 100 150 200 300
+python -m eupg prepare dp --dataset heart  --eps 0.25 0.5 1 2 5 10 20 50 100 150 200 300
+python -m eupg prepare dp --dataset credit --eps 1
+python -m eupg prepare dp --dataset cifar10 --eps 0.25 0.5 1 5 10 100
 ```
 
 **Step 2 — Baseline + SISA** (one command per dataset × model combination)
@@ -291,7 +291,7 @@ python -m mapgu prepare dp --dataset cifar10 --eps 0.25 0.5 1 5 10 100
 See the `STEP 2` block in [cli_commands.txt](cli_commands.txt).
 Results land in `results/<dataset>/`.
 
-**Step 3 — MAPGU_k and MAPGU_ε** (reads prep data from Step 1)
+**Step 3 — eupg_k and eupg_ε** (reads prep data from Step 1)
 
 See the `STEP 3` block in [cli_commands.txt](cli_commands.txt).
 
@@ -329,10 +329,10 @@ and run all cells. Figures are saved as PDFs under `results/figures/`.
 
 | Table | Content | Script | Input CSVs | Output |
 |---|---|---|---|---|
-| **Table 4** | Utility + MIA before/after unlearning (main results) | `compose_paper_tables.py --table 4` | `results/<dataset>/{model}_m_d_fr=0.05.csv` (before) `results/<dataset>/{model}_mret_dret_fr=0.05.csv` (retrain) `results/<dataset>/{model}_mk=30_d_fr=0.05_epochs=5.csv` (MAPGU_k before) `results/<dataset>/{model}_mk=30_dret_fr=0.05_epochs=5.csv` (MAPGU_k after) `results/<dataset>/{model}_mdpd_eps=1_fr=0.05_epochs=5.csv` (MAPGU_ε before) `results/<dataset>/{model}_mdpret_eps=1_fr=0.05_epochs=5.csv` (MAPGU_ε after) `results/<dataset>/{model}_certified_sp_summary.csv` (Certified-SP) | `results/paper_tables/table_4_quality_{model}.tex` |
+| **Table 4** | Utility + MIA before/after unlearning (main results) | `compose_paper_tables.py --table 4` | `results/<dataset>/{model}_m_d_fr=0.05.csv` (before) `results/<dataset>/{model}_mret_dret_fr=0.05.csv` (retrain) `results/<dataset>/{model}_mk=30_d_fr=0.05_epochs=5.csv` (eupg_k before) `results/<dataset>/{model}_mk=30_dret_fr=0.05_epochs=5.csv` (eupg_k after) `results/<dataset>/{model}_mdpd_eps=1_fr=0.05_epochs=5.csv` (eupg_ε before) `results/<dataset>/{model}_mdpret_eps=1_fr=0.05_epochs=5.csv` (eupg_ε after) `results/<dataset>/{model}_certified_sp_summary.csv` (Certified-SP) | `results/paper_tables/table_4_quality_{model}.tex` |
 | **Table 6a** | Head-to-head unlearning wall time | `compose_paper_tables.py --table 6a` | `results/<dataset>/{model}_runtimes.csv` | `results/paper_tables/table_6a_efficiency_headtohead.tex` |
 | **Table 6b** | Phase-by-phase runtime breakdown | `compose_paper_tables.py --table 6b` | `results/<dataset>/{model}_runtimes.csv` | `results/paper_tables/table_6b_efficiency_phases.tex` |
-| **Table 7** | FT-epoch sensitivity — CIFAR-10/ResNet-18, MAPGU_ε + Certified-SP, epochs 3/5/10/20/30/50 | `compose_paper_tables.py --table 7` | `results/sensitivity_studies/cifar10_resnet18_eps_ft_epochs_onecycle_lr5e-2/cifar10/*.csv` `results/sensitivity_studies/cifar10_resnet18_certified_sp_post_epochs_onecycle_lr5e-2/cifar10/*_summary.csv` | `results/paper_tables/table_7_ft_epochs.tex` |
+| **Table 7** | FT-epoch sensitivity — CIFAR-10/ResNet-18, eupg_ε + Certified-SP, epochs 3/5/10/20/30/50 | `compose_paper_tables.py --table 7` | `results/sensitivity_studies/cifar10_resnet18_eps_ft_epochs_onecycle_lr5e-2/cifar10/*.csv` `results/sensitivity_studies/cifar10_resnet18_certified_sp_post_epochs_onecycle_lr5e-2/cifar10/*_summary.csv` | `results/paper_tables/table_7_ft_epochs.tex` |
 | **Table 8** | Forget-ratio sensitivity — Adult/MLP, ratios 1/5/10/25/50/75/90 % | `compose_paper_tables.py --table 8` | `results/sensitivity_studies/adult_mlp_forget_ratio/adult/*.csv` | `results/paper_tables/table_8_forget_ratio.tex` |
 
 ### Figures
@@ -356,14 +356,14 @@ All experiment results are saved to `results/<dataset>/` using this scheme:
 {model}_mret_dret_fr={fr}.csv               # Model retrained on D_r (oracle after unlearning)
 {model}_sisa_m_d_shards={S}_fr={fr}.csv     # SISA model on full D
 {model}_sisa_mret_dret_shards={S}_fr={fr}.csv # SISA model on D_r
-{model}_mk={k}_dk_fr={fr}.csv               # MAPGU_k Phase 1 (trained on k-anon D_k)
-{model}_mk={k}_d_fr={fr}_epochs={ft}.csv    # MAPGU_k Phase 2 (fine-tuned on D)
-{model}_mk={k}_dret_fr={fr}_epochs={ft}.csv # MAPGU_k Phase 3 (fine-tuned on D_r)
-{model}_mdp_eps={eps}_fr={fr}.csv           # MAPGU_ε Phase 1 (trained on DP data)
-{model}_mdpd_eps={eps}_fr={fr}_epochs={ft}.csv  # MAPGU_ε Phase 2 (fine-tuned on D)
-{model}_mdpret_eps={eps}_fr={fr}_epochs={ft}.csv # MAPGU_ε Phase 3 (fine-tuned on D_r)
-{model}_kanon_summary.csv                   # MAPGU_k aggregate summary (all phases, k values, runs)
-{model}_dp_summary.csv                      # MAPGU_ε aggregate summary (all phases, ε values, runs)
+{model}_mk={k}_dk_fr={fr}.csv               # eupg_k Phase 1 (trained on k-anon D_k)
+{model}_mk={k}_d_fr={fr}_epochs={ft}.csv    # eupg_k Phase 2 (fine-tuned on D)
+{model}_mk={k}_dret_fr={fr}_epochs={ft}.csv # eupg_k Phase 3 (fine-tuned on D_r)
+{model}_mdp_eps={eps}_fr={fr}.csv           # eupg_ε Phase 1 (trained on DP data)
+{model}_mdpd_eps={eps}_fr={fr}_epochs={ft}.csv  # eupg_ε Phase 2 (fine-tuned on D)
+{model}_mdpret_eps={eps}_fr={fr}_epochs={ft}.csv # eupg_ε Phase 3 (fine-tuned on D_r)
+{model}_kanon_summary.csv                   # eupg_k aggregate summary (all phases, k values, runs)
+{model}_dp_summary.csv                      # eupg_ε aggregate summary (all phases, ε values, runs)
 {model}_certified_sp_summary.csv            # Certified-SP summary (all phases)
 {model}_runtimes.csv                        # Phase-level runtimes for all methods
 ```
@@ -398,8 +398,8 @@ They cover training phases only; MIA evaluation (`--rmia_n_ref 8`) adds roughly
 |---|---|---|---|---|
 | Retrain | 1.5 min | 2.5 min | 4.5 min | < 5 s |
 | SISA | 3 min | 4.5 min | — | < 5 s |
-| MAPGU_k (full pipeline) | 2.5 min | 2.5 min | 7.5 min | < 1 min |
-| MAPGU_ε (full pipeline) | 1 min | 2.5 min | 7 min | < 1 min |
+| EUPG_k (full pipeline) | 2.5 min | 2.5 min | 7.5 min | < 1 min |
+| EUPG_ε (full pipeline) | 1 min | 2.5 min | 7 min | < 1 min |
 | Certified-SP | < 1 min | 1.5 min | 4 min | N/A |
 | **All methods, 1 dataset** | **~9 min** | **~13 min** | **~23 min** | **~1 min** |
 
@@ -408,8 +408,8 @@ They cover training phases only; MIA evaluation (`--rmia_n_ref 8`) adds roughly
 | Method | Wall time |
 |---|---|
 | Retrain | ~36 min |
-| MAPGU_k (full pipeline, incl. k-anon prep + train) | ~1.6 h |
-| MAPGU_ε (full pipeline, incl. DP synth + train) | ~48 min |
+| EUPG_k (full pipeline, incl. k-anon prep + train) | ~1.6 h |
+| EUPG_ε (full pipeline, incl. DP synth + train) | ~48 min |
 | Certified-SP | ~43 min |
 | **All methods** | **~3.7 h** |
 
@@ -433,9 +433,9 @@ For a faster smoke-test, use `--n_repeat 3 --rmia_n_ref 1`.
 Reduce `--batch_size` (try 128 or 64) or disable AMP (`--use_amp false`).
 DenseNet uses more memory than ResNet-18.
 
-**`No module named 'mapgu'`**
-Run commands from the repository root with `conda activate mapgu`.
-The `mapgu/` package is resolved relative to the working directory.
+**`No module named 'eupg'`**
+Run commands from the repository root with `conda activate eupg`.
+The `eupg/` package is resolved relative to the working directory.
 
 **`dp_adult.csv not found` or similar missing DP data**
 Run the DP preparation step (Step 1c) or download the `dp_data/` folder
@@ -452,7 +452,7 @@ install PyTorch manually after creating the conda environment:
 
 ```bash
 conda env create -f environment.yml --no-deps  # creates env without pip packages
-conda activate mapgu
+conda activate eupg
 pip install torch==1.12.0+cu113 torchvision==0.13.0+cu113 \
     -f https://download.pytorch.org/whl/torch_stable.html
 pip install -r requirements.txt  # remaining pip deps
