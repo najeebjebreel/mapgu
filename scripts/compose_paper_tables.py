@@ -1,11 +1,11 @@
-"""MAPGU paper — LaTeX table composer.
+"""EUPG paper — LaTeX table composer.
 
 Tables generated
 ----------------
   4   Utility (Bef/Aft/Δ) + MIA (AUC/TPR@1%) — merged, per model: mlp / xgboost / resnet18
   6a  Head-to-head unlearning efficiency
   6b  Phase-by-phase runtime breakdown
-  7   FT-epoch sensitivity  (CIFAR-10 / ResNet-18 — MAPGU_ε + Certified-SP)
+  7   FT-epoch sensitivity  (CIFAR-10 / ResNet-18 — EUPG_ε + Certified-SP)
   8   Forget ratio sensitivity  (Adult / MLP)
 
 Usage
@@ -83,7 +83,7 @@ METRIC_LABEL = {
 FORGET_RATIO_SENSITIVITY_SUBDIR = "sensitivity_studies/adult_mlp_forget_ratio"
 FORGET_RATIO_VALUES = [0.01, 0.05, 0.10, 0.25, 0.50, 0.75, 0.90]
 # Sensitivity study subdirs for Table 7 (CIFAR-10 / ResNet-18 — FT epochs)
-FT_EPOCHS_MAPGU_SUBDIR  = "sensitivity_studies/cifar10_resnet18_eps_ft_epochs_onecycle_lr5e-2"
+FT_EPOCHS_EUPG_SUBDIR  = "sensitivity_studies/cifar10_resnet18_eps_ft_epochs_onecycle_lr5e-2"
 FT_EPOCHS_CERTSP_SUBDIR = "sensitivity_studies/cifar10_resnet18_certified_sp_post_epochs_onecycle_lr5e-2"
 FT_EPOCH_VALUES         = [3, 5, 10, 20, 30, 50]
 
@@ -398,17 +398,17 @@ def _get_method_rows(
     after  = load_metrics(_p(f"{model}_sisa_mret_dret_shards={S}_fr={fr_s}.csv"))
     rows.append((rf"SISA ($S$={S})", before, after))
 
-    # ── MAPGU_k (k-anonymity) ──────────────────────────────────────────────
+    # ── EUPG_k (k-anonymity) ──────────────────────────────────────────────
     k_ds = KANON_K_PER_DATASET.get(dataset, k)
     before = load_metrics(_p(f"{model}_mk={k_ds}_d_fr={fr_s}_epochs={ft}.csv"))
     after  = load_metrics(_p(f"{model}_mk={k_ds}_dret_fr={fr_s}_epochs={ft}.csv"))
-    rows.append((rf"MAPGU$_k$ ($k$={k_ds})", before, after))
+    rows.append((rf"EUPG$_k$ ($k$={k_ds})", before, after))
 
-    # ── MAPGU_ε (DP) ───────────────────────────────────────────────────────
+    # ── EUPG_ε (DP) ───────────────────────────────────────────────────────
     before = load_metrics(_p(f"{model}_mdpd_eps={eps_s}_fr={fr_s}_epochs={ft}.csv"))
     after  = load_metrics(_p(f"{model}_mdpret_eps={eps_s}_fr={fr_s}_epochs={ft}.csv"))
     eps_disp = int(eps) if eps == int(eps) else eps
-    rows.append((rf"MAPGU$_\varepsilon$ ($\varepsilon$={eps_disp})", before, after))
+    rows.append((rf"EUPG$_\varepsilon$ ($\varepsilon$={eps_disp})", before, after))
 
     # ── Certified-SP ───────────────────────────────────────────────────────
     if model != "xgboost":
@@ -795,9 +795,9 @@ def build_table_efficiency_headtohead(
              "baseline", "-", ["retrain_Dr"]),
             (rf"SISA ($S$={S})",
              "sisa", f"S={S}", ["retrain_affected_shard_Dr"]),
-            (rf"MAPGU$_k$ ($k$={k_ds})",
+            (rf"EUPG$_k$ ($k$={k_ds})",
              "kanon", f"k={k_ds}", ["ft_Mk_Dr"]),
-            (rf"MAPGU$_\varepsilon$ ($\varepsilon$={eps_disp})",
+            (rf"EUPG$_\varepsilon$ ($\varepsilon$={eps_disp})",
              "dp", f"eps={_fmt_eps(eps)}", ["ft_Meps_Dr"]),
             (rf"Certified-SP ($\varepsilon$={CERTIFIED_SP_EPS}, $\delta$={CERTIFIED_SP_DELTA})",
              "certified_sp", f"eps={CERTIFIED_SP_EPS}", ["unlearn_noisy", "post_ft"]),
@@ -927,9 +927,9 @@ def build_table_efficiency_phases(
 
     body_lines: List[str] = []
 
-    # ── MAPGU_k (k-anon) ───────────────────────────────────────────────────
+    # ── EUPG_k (k-anon) ───────────────────────────────────────────────────
     body_lines += _section_header(
-        rf"MAPGU$_k$: k-anon prep $\to$ train $M_k$ $\to$ "
+        rf"EUPG$_k$: k-anon prep $\to$ train $M_k$ $\to$ "
         rf"fine-tune on $\mathcal{{D}}$ $\to$ fine-tune on $\mathcal{{D}}_r$"
     )
     body_lines.append(_row(
@@ -954,9 +954,9 @@ def build_table_efficiency_phases(
         cells.append(_mval(total) if total > 0 else MISSING)
         body_lines.append(_row(*cells))
 
-    # ── MAPGU_ε (DP) ───────────────────────────────────────────────────────
+    # ── EUPG_ε (DP) ───────────────────────────────────────────────────────
     body_lines += _section_header(
-        rf"MAPGU$_\varepsilon$ ($\varepsilon$={eps_disp}): [embed]$^\dagger$ $\to$ DP synthesis $\to$ "
+        rf"EUPG$_\varepsilon$ ($\varepsilon$={eps_disp}): [embed]$^\dagger$ $\to$ DP synthesis $\to$ "
         rf"train $M_\varepsilon$ $\to$ fine-tune on $\mathcal{{D}}$ $\to$ fine-tune on $\mathcal{{D}}_r$"
     )
     body_lines.append(_row(
@@ -1054,9 +1054,9 @@ def build_table_forget_ratio(
          lambda fr_s: f"{model}_mret_dret_fr={fr_s}.csv"),
         (rf"SISA ($S$={S})",
          lambda fr_s: f"{model}_sisa_mret_dret_shards={S}_fr={fr_s}.csv"),
-        (rf"MAPGU$_k$ ($k$={k})",
+        (rf"EUPG$_k$ ($k$={k})",
          lambda fr_s: f"{model}_mk={k}_dret_fr={fr_s}_epochs={ft}.csv"),
-        (rf"MAPGU$_\varepsilon$ ($\varepsilon$={int(eps) if eps == int(eps) else eps})",
+        (rf"EUPG$_\varepsilon$ ($\varepsilon$={int(eps) if eps == int(eps) else eps})",
          lambda fr_s: f"{model}_mdpret_eps={_fmt_eps(eps)}_fr={fr_s}_epochs={ft}.csv"),
         (rf"Certified-SP ($\varepsilon$={CERTIFIED_SP_EPS}, $\delta$={CERTIFIED_SP_DELTA})", None),  # handled via glob
     ]
@@ -1117,13 +1117,13 @@ def build_table_forget_ratio(
 
 def build_table_ft_epochs(
     results_dir: str,
-    eupg_subdir: str = FT_EPOCHS_MAPGU_SUBDIR,
+    eupg_subdir: str = FT_EPOCHS_EUPG_SUBDIR,
     certsp_subdir: str = FT_EPOCHS_CERTSP_SUBDIR,
     ft_values: Optional[List[int]] = None,
     eps: float = DP_EPS,
     fr: float = FORGET_RATIO,
 ) -> str:
-    """Table 7: FT-epoch sensitivity for CIFAR-10 / ResNet-18 (MAPGU_ε + Certified-SP)."""
+    """Table 7: FT-epoch sensitivity for CIFAR-10 / ResNet-18 (EUPG_ε + Certified-SP)."""
     if ft_values is None:
         ft_values = FT_EPOCH_VALUES
 
@@ -1148,8 +1148,8 @@ def build_table_ft_epochs(
 
     data_lines: List[str] = []
 
-    # MAPGU_ε row
-    cells: List[str] = [rf"MAPGU$_\varepsilon$ ($\varepsilon$={eps_disp})"]
+    # EUPG_ε row
+    cells: List[str] = [rf"EUPG$_\varepsilon$ ($\varepsilon$={eps_disp})"]
     for n in ft_values:
         fname   = f"resnet18_mdpret_eps={eps_s}_fr={fr_s}_epochs={n}.csv"
         metrics = load_metrics(os.path.join(eupg_dir, fname))
@@ -1253,7 +1253,7 @@ def write_all_tables(
 # ---------------------------------------------------------------------------
 
 def main() -> None:
-    p = argparse.ArgumentParser(description="Compose LaTeX tables for the MAPGU paper.")
+    p = argparse.ArgumentParser(description="Compose LaTeX tables for the EUPG paper.")
     p.add_argument(
         "--table", default="all",
         choices=["all"] + ALL_TABLE_IDS,

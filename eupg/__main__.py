@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-MAPGU unified command-line interface.
+EUPG unified command-line interface.
 
 Usage:
   python -m eupg run   --method {baseline,dp,kanon,sisa,certified_sp} --dataset ... --model ... [args]
@@ -42,7 +42,7 @@ def _str_to_bool(v: str) -> bool:
 def build_parser() -> argparse.ArgumentParser:
     p = argparse.ArgumentParser(
         prog="eupg",
-        description="MAPGU: Efficient Unlearning with Privacy Guarantees — unified runner",
+        description="EUPG: Efficient Unlearning with Privacy Guarantees — unified runner",
     )
     sub = p.add_subparsers(dest="command", required=True)
 

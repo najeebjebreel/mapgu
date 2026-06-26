@@ -1,6 +1,6 @@
 ﻿#!/usr/bin/env python3
 """
-Prepare privacy-protected datasets OFFLINE (one-time) for MAPGU.
+Prepare privacy-protected datasets OFFLINE (one-time) for EUPG.
 
 Replaces scripts/prepare_private_data.py with eupg-package imports.
 

@@ -1,4 +1,4 @@
-﻿"""Centralised logging setup for MAPGU."""
+﻿"""Centralised logging setup for EUPG."""
 
 from __future__ import annotations
 

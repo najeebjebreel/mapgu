@@ -368,7 +368,7 @@ def plot_multi_sweep(
     for i, s in enumerate(series):
         c   = s.get('color', PALETTE[i % len(PALETTE)])
         lbl = s.get('label', f'series {i}')
-        mk  = 'o' if 'MAPGU' in lbl else 's'
+        mk  = 'o' if 'EUPG' in lbl else 's'
         u   = np.asarray(s['util'], float)
         m   = np.asarray(s['mia'],  float)
 
